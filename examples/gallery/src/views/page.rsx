@@ -1,8 +1,11 @@
+use std::collections::HashMap;
+
 use crate::catalog::{count, count_without_js, Js, GROUPS};
+use crate::code::Tab;
 use brocanth_ui::components::head::UiScripts;
 use super::demo::Demo;
 
-pub fn Page() -> Element {
+pub fn Page(code: &HashMap<&str, Vec<Tab>>) -> Element {
     <!DOCTYPE html>
     <html lang="en">
         <head>
@@ -67,6 +70,7 @@ pub fn Page() -> Element {
                                             <div class="g-pane-body"><Demo slug={entry.slug} p="stripe" /></div>
                                         </div>
                                     </div>
+                                    <CodePanel slug={entry.slug} tabs={&code[entry.slug]} />
                                 </section>
                             }
                         }
@@ -75,6 +79,39 @@ pub fn Page() -> Element {
             </div>
         </body>
     </html>
+}
+
+/// The sources under an example: CSS-only tabs (radios), so the gallery
+/// adds no script. The panel opens with the same motion as the accordion.
+fn CodePanel(slug: &str, tabs: &[Tab]) -> Element {
+    <details class="g-src ui-collapse">
+        <summary>
+            <span>Code</span>
+            <span class="g-src-langs">{langs(tabs)}</span>
+        </summary>
+        <div class="g-src-body">
+            for (i, tab) in tabs.iter().enumerate() {
+                <input type="radio" name={format!("code-{slug}")} id={format!("code-{slug}-{i}")} checked?={i == 0} class="g-src-radio">
+            }
+            <div class="g-src-tabs">
+                for (i, tab) in tabs.iter().enumerate() {
+                    <label for={format!("code-{slug}-{i}")}>{tab.label}</label>
+                }
+            </div>
+            <div class="g-src-panels">
+                for tab in tabs {
+                    <div class="g-src-panel">
+                        <div class="g-src-path">{&tab.path}</div>
+                        {! &tab.html }
+                    </div>
+                }
+            </div>
+        </div>
+    </details>
+}
+
+fn langs(tabs: &[Tab]) -> &'static str {
+    if tabs.iter().any(|tab| tab.label == "Glue") { "rsx · ts" } else { "rsx" }
 }
 
 fn dot_class(js: Js) -> &'static str {

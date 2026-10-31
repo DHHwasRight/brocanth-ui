@@ -111,30 +111,6 @@
   ::backdrop {
     background: var(--ui-overlay);
   }
-  /* Enter and exit transitions for native overlays: @starting-style for
-     the enter, allow-discrete so `display` waits for the exit. */
-  dialog, [popover] {
-    transition-property: opacity, transform, overlay, display;
-    transition-duration: 150ms;
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    transition-behavior: allow-discrete;
-  }
-  dialog:not([open]), [popover]:not(:popover-open) {
-    opacity: 0;
-  }
-  @starting-style {
-    dialog[open], [popover]:popover-open { opacity: 0; transform: translateY(4px) scale(0.98); }
-  }
-  ::backdrop {
-    transition: opacity 150ms, overlay 150ms allow-discrete, display 150ms allow-discrete;
-  }
-  @starting-style {
-    dialog[open]::backdrop { opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    dialog, [popover], ::backdrop { transition: none; }
-  }
-
   /* Without anchor positioning, an anchored popover centres on the screen. */
   @supports not (anchor-name: --a) {
     [popover][data-anchored] { inset: 0; margin: auto; }
@@ -195,4 +171,101 @@
   /* A details marker is drawn by the component, not the browser. */
   summary { list-style: none; }
   summary::-webkit-details-marker { display: none; }
+}
+
+/*
+ * Motion, as shadcn/ui has it (tw-animate-css): overlays fade and zoom from
+ * 95%, floating content also slides 0.5rem from its anchor side, sheets
+ * slide from their edge (500ms in, 300ms out), accordion content grows to
+ * its height.
+ *
+ * No JavaScript: enter states come from @starting-style, and exit states
+ * stay on screen while they animate because `display` and `overlay`
+ * transition with `allow-discrete`. That works for native overlays
+ * ([open], :popover-open) and for Zag content (the `hidden` attribute).
+ * An engine without a feature skips the animation, not the component.
+ */
+@layer components {
+  /* Dialog and alert dialog: fade + zoom, 200ms. */
+  .ui-modal,
+  .ui-modal::backdrop,
+  .ui-sheet::backdrop {
+    transition-property: opacity, scale, overlay, display;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+    transition-behavior: allow-discrete;
+  }
+  .ui-modal:not([open]) { opacity: 0; scale: 0.95; }
+  .ui-modal:not([open])::backdrop,
+  .ui-sheet:not([open])::backdrop { opacity: 0; }
+  @starting-style {
+    .ui-modal[open] { opacity: 0; scale: 0.95; }
+    .ui-modal[open]::backdrop,
+    .ui-sheet[open]::backdrop { opacity: 0; }
+  }
+
+  /* Sheet and drawer: slide from data-side, 500ms in, 300ms out. */
+  .ui-sheet {
+    transition-property: translate, overlay, display;
+    transition-duration: 500ms;
+    transition-timing-function: ease-in-out;
+    transition-behavior: allow-discrete;
+  }
+  .ui-sheet:not([open]) { transition-duration: 300ms; }
+  .ui-sheet[data-side="right"]:not([open]) { translate: 100% 0; }
+  .ui-sheet[data-side="left"]:not([open]) { translate: -100% 0; }
+  .ui-sheet[data-side="top"]:not([open]) { translate: 0 -100%; }
+  .ui-sheet[data-side="bottom"]:not([open]) { translate: 0 100%; }
+  @starting-style {
+    .ui-sheet[data-side="right"][open] { translate: 100% 0; }
+    .ui-sheet[data-side="left"][open] { translate: -100% 0; }
+    .ui-sheet[data-side="top"][open] { translate: 0 -100%; }
+    .ui-sheet[data-side="bottom"][open] { translate: 0 100%; }
+  }
+
+  /* Floating content (popover, menus, select, combobox, navigation
+     flyouts): fade + zoom from 95% + a 0.5rem slide from the anchor,
+     150ms. Zag writes the placement and --transform-origin; a native
+     popover opens below its anchor. */
+  .ui-pop {
+    --ui-pop-from: 0 -0.5rem;
+    transform-origin: var(--transform-origin, top center);
+    transition-property: opacity, scale, translate, overlay, display;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+    transition-behavior: allow-discrete;
+  }
+  .ui-pop[data-placement^="top"] { --ui-pop-from: 0 0.5rem; }
+  .ui-pop[data-placement^="left"] { --ui-pop-from: 0.5rem 0; }
+  .ui-pop[data-placement^="right"] { --ui-pop-from: -0.5rem 0; }
+  .ui-pop[hidden],
+  .ui-pop[popover]:not(:popover-open) { opacity: 0; scale: 0.95; translate: var(--ui-pop-from); }
+  @starting-style {
+    .ui-pop:not([hidden]):not([popover]),
+    .ui-pop[popover]:popover-open { opacity: 0; scale: 0.95; translate: var(--ui-pop-from); }
+  }
+
+  /* CSS-only floating content (tooltip, hover card): the same motion,
+     driven by :hover and :focus. The component toggles visibility. */
+  .ui-float {
+    transition-property: opacity, scale, visibility;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  /* Accordion and collapsible: the content grows to its height, 200ms.
+     interpolate-size lets `auto` animate (Chromium); elsewhere it opens
+     at once. */
+  details.ui-collapse { interpolate-size: allow-keywords; }
+  details.ui-collapse::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition: block-size 200ms ease-out, content-visibility 200ms allow-discrete;
+  }
+  details.ui-collapse[open]::details-content { block-size: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-modal, .ui-modal::backdrop, .ui-sheet, .ui-sheet::backdrop, .ui-pop, .ui-float,
+    details.ui-collapse::details-content { transition-duration: 0s; }
+  }
 }

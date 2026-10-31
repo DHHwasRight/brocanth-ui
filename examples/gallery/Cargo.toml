@@ -10,3 +10,5 @@ description = "Renders every component twice, under the shadcn theme and the Str
 [dependencies]
 brocanth-ui = { workspace = true, features = ["charts"] }
 rsx.workspace = true
+# Code highlighting with TextMate grammars and VS Code themes, as in the d3set gallery.
+giallo = { version = "0.5", features = ["dump"] }

@@ -21,7 +21,7 @@
 
 use crate::{class, ButtonSize, ButtonVariant};
 
-const PANEL: &str = "fixed gap-4 border bg-popover p-6 text-popover-foreground shadow-overlay open:grid";
+const PANEL: &str = "ui-modal fixed gap-4 border bg-popover p-6 text-popover-foreground shadow-overlay open:grid";
 
 pub fn Dialog(id: &str, title: &str, description: &str, children: Element) -> Element {
     <dialog id={id} closedby="any" aria-labelledby={format!("{id}-title")} class={format!("{PANEL} m-auto w-[calc(100%-2rem)] max-w-lg rounded-lg")}>
@@ -53,16 +53,25 @@ pub enum SheetSide {
 
 fn sheet_class(side: SheetSide) -> &'static str {
     match side {
-        SheetSide::Right => "fixed inset-y-0 right-0 left-auto m-0 flex h-dvh max-h-none w-3/4 max-w-sm flex-col gap-4 border-l bg-popover p-6 text-popover-foreground shadow-overlay translate-x-full open:translate-x-0 starting:open:translate-x-full",
-        SheetSide::Left => "fixed inset-y-0 left-0 right-auto m-0 flex h-dvh max-h-none w-3/4 max-w-sm flex-col gap-4 border-r bg-popover p-6 text-popover-foreground shadow-overlay -translate-x-full open:translate-x-0 starting:open:-translate-x-full",
-        SheetSide::Top => "fixed inset-x-0 top-0 bottom-auto m-0 flex h-auto w-full max-w-none flex-col gap-4 border-b bg-popover p-6 text-popover-foreground shadow-overlay -translate-y-full open:translate-y-0 starting:open:-translate-y-full",
-        SheetSide::Bottom => "fixed inset-x-0 bottom-0 top-auto m-0 flex h-auto w-full max-w-none flex-col gap-4 border-t bg-popover p-6 text-popover-foreground shadow-overlay translate-y-full open:translate-y-0 starting:open:translate-y-full",
+        SheetSide::Right => "ui-sheet fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none w-3/4 max-w-sm flex-col gap-4 border-l bg-popover p-6 text-popover-foreground shadow-overlay open:flex",
+        SheetSide::Left => "ui-sheet fixed inset-y-0 left-0 right-auto m-0 h-dvh max-h-none w-3/4 max-w-sm flex-col gap-4 border-r bg-popover p-6 text-popover-foreground shadow-overlay open:flex",
+        SheetSide::Top => "ui-sheet fixed inset-x-0 top-0 bottom-auto m-0 h-auto w-full max-w-none flex-col gap-4 border-b bg-popover p-6 text-popover-foreground shadow-overlay open:flex",
+        SheetSide::Bottom => "ui-sheet fixed inset-x-0 bottom-0 top-auto m-0 h-auto w-full max-w-none flex-col gap-4 border-t bg-popover p-6 text-popover-foreground shadow-overlay open:flex",
+    }
+}
+
+fn side_name(side: SheetSide) -> &'static str {
+    match side {
+        SheetSide::Top => "top",
+        SheetSide::Right => "right",
+        SheetSide::Bottom => "bottom",
+        SheetSide::Left => "left",
     }
 }
 
 /// A dialog that slides in from an edge of the screen.
 pub fn Sheet(id: &str, side: SheetSide, title: &str, description: &str, children: Element) -> Element {
-    <dialog id={id} closedby="any" aria-labelledby={format!("{id}-title")} class={sheet_class(side)}>
+    <dialog id={id} closedby="any" data-side={side_name(side)} aria-labelledby={format!("{id}-title")} class={sheet_class(side)}>
         <Header id={id} title={title} description={description} />
         <div class="flex-1 overflow-y-auto">{children}</div>
         <CornerClose target={id} />
@@ -73,7 +82,7 @@ pub fn Sheet(id: &str, side: SheetSide, title: &str, description: &str, children
 /// dragging it would need JavaScript, so Escape, the backdrop and the close
 /// buttons close it.
 pub fn Drawer(id: &str, title: &str, description: &str, children: Element) -> Element {
-    <dialog id={id} closedby="any" aria-labelledby={format!("{id}-title")} class="fixed inset-x-0 bottom-0 top-auto m-0 flex h-auto max-h-[80vh] w-full max-w-none flex-col gap-4 rounded-t-xl border-t bg-popover px-6 pt-3 pb-6 text-popover-foreground shadow-overlay translate-y-full open:translate-y-0 starting:open:translate-y-full">
+    <dialog id={id} closedby="any" data-side="bottom" aria-labelledby={format!("{id}-title")} class="ui-sheet fixed inset-x-0 bottom-0 top-auto m-0 h-auto max-h-[80vh] w-full max-w-none flex-col gap-4 rounded-t-xl border-t bg-popover px-6 pt-3 pb-6 text-popover-foreground shadow-overlay open:flex">
         <div aria-hidden="true" class="mx-auto h-1.5 w-12 shrink-0 rounded-full bg-muted"></div>
         <div class="mx-auto grid w-full max-w-md gap-4">
             <Header id={id} title={title} description={description} />

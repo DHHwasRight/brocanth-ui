@@ -71,7 +71,7 @@ fn day_class(outside: bool, today: bool) -> &'static str {
     match (outside, today) {
         (true, _) => "inline-flex size-8 cursor-pointer items-center justify-center rounded-md text-sm text-muted-foreground/60 hover:bg-accent has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
         (false, true) => "inline-flex size-8 cursor-pointer items-center justify-center rounded-md bg-accent text-sm font-control text-accent-foreground hover:bg-accent has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
-        (false, false) => "inline-flex size-8 cursor-pointer items-center justify-center rounded-md text-sm text-foreground hover:bg-accent hover:text-accent-foreground has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
+        (false, false) => "inline-flex size-8 cursor-pointer items-center justify-center rounded-md text-sm text-foreground transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
     }
 }
 
@@ -84,7 +84,7 @@ pub fn DatePicker(id: &str, name: &str, month: &str, selected: &str, today: &str
             {! crate::icons::CALENDAR }
             <span data-part="value" data-placeholder={placeholder} class="data-[empty]:text-muted-foreground" { ...[("data-empty", Date::parse(selected).is_none())] }>{picker_label(selected, placeholder)}</span>
         </button>
-        <div id={&popover} popover data-anchored class="inset-auto m-0 mt-1 rounded-md shadow-overlay [position-area:block-end_span-inline-end] [position-try-fallbacks:flip-block]" style={format!("position-anchor: --{popover}")}>
+        <div id={&popover} popover data-anchored class="ui-pop inset-auto m-0 mt-1 rounded-md shadow-overlay [position-area:block-end_span-inline-end] [position-try-fallbacks:flip-block]" style={format!("position-anchor: --{popover}")}>
             <Calendar id={&format!("{id}-calendar")} name={name} month={month} selected={selected} today={today} nav_base={nav_base} />
         </div>
     </div>

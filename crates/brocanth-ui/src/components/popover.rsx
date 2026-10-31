@@ -15,7 +15,7 @@ pub fn PopoverTrigger(target: &str, variant: ButtonVariant, children: Element) -
 }
 
 pub fn PopoverContent(id: &str, label: &str, children: Element) -> Element {
-    <div id={id} popover data-anchored role="dialog" aria-label={label} class="inset-auto m-0 mt-1 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-overlay outline-none [position-area:block-end_span-inline-end] [position-try-fallbacks:flip-block,flip-inline]" style={format!("position-anchor: --{id}")}>
+    <div id={id} popover data-anchored role="dialog" aria-label={label} class="ui-pop inset-auto m-0 mt-1 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-overlay outline-none [position-area:block-end_span-inline-end] [position-try-fallbacks:flip-block,flip-inline]" style={format!("position-anchor: --{id}")}>
         {children}
     </div>
 }

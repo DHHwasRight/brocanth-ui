@@ -9,6 +9,8 @@ use std::{env, fs, path::PathBuf};
 use rsx::Template;
 
 mod catalog;
+mod code;
+mod highlight;
 
 mod views {
     rsx::load_dir!("src/views");
@@ -33,7 +35,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         include_str!(concat!(env!("OUT_DIR"), "/gallery.css")),
     )?;
 
-    let html = views::page::Page {}.render_to_string()?;
+    let code = code::all();
+    let html = views::page::Page { code: &code }.render_to_string()?;
     // Relative URLs, so the export works below any path, not only at `/`.
     let html = html.replace("\"/brocanth-ui/", "\"brocanth-ui/");
     fs::write(out.join("index.html"), html)?;

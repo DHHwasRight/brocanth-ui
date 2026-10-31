@@ -93,6 +93,36 @@
   .g-pane-label { display: flex; justify-content: space-between; padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--g-muted); background: var(--g-stage); border-bottom: 1px solid var(--g-line); }
   .g-pane-body { padding: 24px; }
 
+  /* Code panel: d3set's details.code, with CSS-only tabs. */
+  .g-src { margin-top: 12px; border: 1px solid var(--g-line); border-radius: var(--g-radius); overflow: hidden; }
+  .g-src > summary { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--g-ink); background: var(--g-stage); }
+  .g-src > summary::before { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; rotate: -45deg; transition: rotate 200ms; }
+  .g-src[open] > summary::before { rotate: 45deg; }
+  .g-src[open] > summary { border-bottom: 1px solid var(--g-line); }
+  .g-src-langs { margin-left: 2px; font: 600 11px var(--g-mono); color: var(--g-muted); text-transform: uppercase; }
+  .g-src-radio { position: absolute; opacity: 0; pointer-events: none; }
+  .g-src-tabs { display: flex; gap: 4px; padding: 6px 8px; background: var(--g-page); border-bottom: 1px solid var(--g-line); }
+  .g-src-tabs label { padding: 2px 10px; font-size: 13px; line-height: 22px; font-weight: 500; color: var(--g-text); border-radius: 6px; cursor: pointer; }
+  .g-src-tabs label:hover { color: var(--g-ink); background: var(--g-stage); }
+  .g-src-panel { display: none; }
+  .g-src-path { padding: 8px 18px; font: 11px var(--g-mono); color: var(--g-muted); background: var(--g-page); border-bottom: 1px solid var(--g-line); }
+  .g-src-radio:nth-of-type(1):checked ~ .g-src-panels > :nth-child(1),
+  .g-src-radio:nth-of-type(2):checked ~ .g-src-panels > :nth-child(2),
+  .g-src-radio:nth-of-type(3):checked ~ .g-src-panels > :nth-child(3) { display: block; }
+  .g-src-radio:nth-of-type(1):checked ~ .g-src-tabs > :nth-child(1),
+  .g-src-radio:nth-of-type(2):checked ~ .g-src-tabs > :nth-child(2),
+  .g-src-radio:nth-of-type(3):checked ~ .g-src-tabs > :nth-child(3) { color: var(--g-accent); background: var(--g-accent-soft); }
+  .g-src-radio:nth-of-type(1):focus-visible ~ .g-src-tabs > :nth-child(1),
+  .g-src-radio:nth-of-type(2):focus-visible ~ .g-src-tabs > :nth-child(2),
+  .g-src-radio:nth-of-type(3):focus-visible ~ .g-src-tabs > :nth-child(3) { outline: 2px solid var(--g-accent); outline-offset: 1px; }
+
+  /* Highlighted code (giallo, night-owl): colours are inline, layout is here. */
+  .g-src pre.giallo { margin: 0; max-height: 28rem; overflow: auto; padding: 16px 18px; font: 13px/21px var(--g-mono); tab-size: 4; }
+  /* giallo writes `color-scheme: light dark` inline: take the page's scheme
+     so the theme switch changes the code colours too. */
+  .g-src pre.giallo { color-scheme: inherit !important; }
+  .g-src pre.giallo code { font: inherit; color: inherit; background: none; border: 0; padding: 0; }
+
   @media (max-width: 1100px) {
     .g-pair { grid-template-columns: 1fr; }
   }

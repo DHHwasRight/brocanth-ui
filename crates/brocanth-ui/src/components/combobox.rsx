@@ -14,7 +14,7 @@ pub fn Combobox(id: &str, name: &str, label: &str, value: &str, placeholder: &st
         </div>
         <input type="hidden" name={name} value={value} data-part="value-input">
         <div data-part="positioner" class="z-50">
-            <div data-part="content" hidden class="max-h-[min(18rem,var(--available-height))] overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-overlay outline-none">
+            <div data-part="content" hidden class="ui-pop max-h-[min(18rem,var(--available-height))] overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-overlay outline-none">
                 for (option, option_label) in options {
                     <div data-part="item" data-value={option} data-label={option_label} class="relative flex cursor-pointer items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground">
                         <span data-part="item-text">{option_label}</span>

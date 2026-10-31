@@ -24,7 +24,7 @@ pub fn NavigationMenuItem(id: &str, label: &str, children: Element) -> Element {
             {label}
             <span class="[&_svg]:size-3 [&_svg]:transition-transform">{! crate::icons::CHEVRON_DOWN }</span>
         </button>
-        <div id={id} popover data-anchored class="inset-auto m-0 mt-1.5 w-[min(32rem,calc(100vw-2rem))] rounded-md border bg-popover p-2 text-popover-foreground shadow-overlay [position-area:block-end_span-inline-end] [position-try-fallbacks:flip-inline]" style={format!("position-anchor: --{id}")}>
+        <div id={id} popover data-anchored class="ui-pop inset-auto m-0 mt-1.5 w-[min(32rem,calc(100vw-2rem))] rounded-md border bg-popover p-2 text-popover-foreground shadow-overlay [position-area:block-end_span-inline-end] [position-try-fallbacks:flip-inline]" style={format!("position-anchor: --{id}")}>
             <ul class="grid gap-1 sm:grid-cols-2">{children}</ul>
         </div>
     </li>

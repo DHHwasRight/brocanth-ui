@@ -76,7 +76,7 @@ await check("alert dialog focuses Cancel and ignores the backdrop", async () => 
 });
 await check("sheet slides in from the right edge", async () => {
   await $('#sheet [commandfor="shadcn-sheet"]').click();
-  await settle(400);
+  await settle(700); // the sheet slides in for 500ms
   const box = await $("#shadcn-sheet").boundingBox();
   await page.keyboard.press("Escape");
   return Math.round(box.x + box.width) === 1440;
@@ -107,6 +107,37 @@ await check("tooltip shows on hover and hides on Escape", async () => {
 await check("accordion keeps one item open (details name)", async () => {
   await $("#accordion details:nth-of-type(2) summary").click();
   return page.evaluate(() => [...document.querySelectorAll('#accordion [data-ui-theme="shadcn"] details')].map((d) => d.open).join() === "false,true,false");
+});
+
+// ---- motion, as shadcn has it, with no JavaScript
+const styleOf = (selector, props) =>
+  page.evaluate(([selector, props]) => {
+    const cs = getComputedStyle(document.querySelector(selector));
+    return Object.fromEntries(props.map((p) => [p, cs[p]]));
+  }, [selector, props]);
+await check("dialog fades and zooms in, and out", async () => {
+  await $('#dialog [commandfor="shadcn-dialog"]').click();
+  await settle(60);
+  const opening = await styleOf("#shadcn-dialog", ["opacity", "scale"]);
+  await settle(300);
+  await page.keyboard.press("Escape");
+  await settle(60);
+  const closing = await styleOf("#shadcn-dialog", ["opacity", "display"]);
+  await settle(300);
+  const opacityIn = Number(opening.opacity);
+  const ok = opacityIn > 0 && opacityIn < 1 && opening.scale !== "none" && Number(closing.opacity) < 1 && closing.display !== "none";
+  return ok || { opening, closing };
+});
+await check("accordion content grows to its height", async () => {
+  await page.evaluate(() => document.getElementById("accordion").scrollIntoView({ block: "center" }));
+  const item = '#accordion [data-ui-theme="stripe"] details:nth-of-type(3)';
+  const closed = (await $(item).boundingBox()).height;
+  await $(`${item} summary`).click();
+  await settle(80);
+  const mid = (await $(item).boundingBox()).height;
+  await settle(300);
+  const open = (await $(item).boundingBox()).height;
+  return (closed < mid && mid < open) || { closed, mid, open };
 });
 
 // ---- glue kinds (no Zag)
@@ -152,6 +183,17 @@ await check("dropdown menu: opens, arrow keys, Enter selects", async () => {
   await page.keyboard.press("Enter");
   const value = await selected;
   return (portaled && value === "billing") || { portaled, value };
+});
+await check("menu content stays on screen while it fades out", async () => {
+  await $('#shadcn-menu [data-part="trigger"]').click();
+  await settle(250);
+  await page.keyboard.press("Escape");
+  await settle(30);
+  const leaving = await page.evaluate(() =>
+    [...document.querySelectorAll('#ui-portal [data-ui-theme="shadcn"] [role="menu"]')].some((el) => el.hidden && getComputedStyle(el).display !== "none"),
+  );
+  await settle(300);
+  return leaving;
 });
 await check("menu checkbox item toggles", async () => {
   await $('#shadcn-menu [data-part="trigger"]').click();

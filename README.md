@@ -17,7 +17,7 @@ The markup is the same for both; only CSS variables differ.
 ```
 mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
 mise run gallery        # every component, both themes, http://localhost:4100
-mise run browser-test   # 24 checks in headless Chromium
+mise run browser-test   # 27 checks in headless Chromium
 ```
 
 See [docs/components.md](docs/components.md) for each component's JS cost,
@@ -49,8 +49,9 @@ crates/brocanth-ui/
                               carousel and date-picker (no Zag)
     boot.js, ui.css           build outputs, committed
   public/brocanth-ui/chunks/  one chunk per kind + shared Zag chunks, committed
-examples/gallery/             every component under both themes, in the d3set gallery layout
-tests/browser.mjs             24 checks in headless Chromium
+examples/gallery/             every component under both themes, in the d3set gallery layout,
+                              with its code (usage, component, glue) highlighted by giallo
+tests/browser.mjs             27 checks in headless Chromium
 docs/components.md            JS cost per component, Zag workarounds, known gaps
 ```
 
@@ -136,6 +137,26 @@ so one theme file covers light and dark.
 
 Charts follow the theme too: `theme.css` maps d3set's `--d3s-series-N` to
 `--ui-chart-N`.
+
+## Motion
+
+The animations match shadcn's (tw-animate-css), in CSS only. Five classes
+in `theme.css` carry them:
+
+| Class | Components | Motion |
+|---|---|---|
+| `ui-modal` | Dialog, Alert dialog | fade + zoom from 95%, 200ms; backdrop fades |
+| `ui-sheet` + `data-side` | Sheet, Drawer | slide from the edge, 500ms in, 300ms out |
+| `ui-pop` | Popover, Navigation menu, Date picker, Dropdown/Context menu, Menubar, Select, Combobox | fade + zoom from 95% + 0.5rem slide from the anchor side, 150ms |
+| `ui-float` | Tooltip, Hover card | fade + zoom, 150ms |
+| `ui-collapse` | Accordion, Collapsible | height grows to `auto`, 200ms |
+
+Enter states come from `@starting-style`. Exit states stay on screen while
+they animate, because `display` and `overlay` transition with
+`allow-discrete`: this works for native overlays and for Zag content (its
+`hidden` attribute), so Zag needs no presence machine. Height to `auto`
+needs `interpolate-size` (Chromium); other engines open the accordion at
+once. `prefers-reduced-motion` turns every transition off.
 
 ## The glue pattern (TypeScript)
 

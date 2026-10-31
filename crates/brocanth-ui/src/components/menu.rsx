@@ -38,7 +38,7 @@ pub fn MenuTrigger(variant: ButtonVariant, children: Element) -> Element {
 
 pub fn MenuContent(children: Element) -> Element {
     <div data-part="positioner" class="z-50">
-        <div data-part="content" role="menu" hidden class="max-h-[var(--available-height)] min-w-[12rem] overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-overlay outline-none data-[state=open]:animate-content-in">
+        <div data-part="content" role="menu" hidden class="ui-pop max-h-[var(--available-height)] min-w-[12rem] overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-overlay outline-none">
             {children}
         </div>
     </div>

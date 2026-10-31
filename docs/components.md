@@ -67,3 +67,4 @@ Every page loads `boot.js` (1.1 KB) and `ui.css` (11.1 KB).
 - **Menubar arrow keys between menus.** Each menu works with the keyboard; Left/Right does not move to the next menu.
 - **Sidebar state across reloads.** The server must render `collapsed` from a cookie or a setting.
 - **Exit animation of native overlays in Firefox.** `transition-behavior: allow-discrete` on `overlay` is Chromium and Safari only; Firefox closes at once.
+- **Accordion height animation outside Chromium.** It needs `interpolate-size`; Safari and Firefox open the item at once.
