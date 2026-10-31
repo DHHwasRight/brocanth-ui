@@ -1,0 +1,40 @@
+[tools]
+# rsx's proc-macro artifacts are not compatible across patch releases.
+# Keep this pin equal to brocanth's.
+rust = "1.98"
+# Only for `--features rebuild-assets`: Tailwind compiles the CSS, Node
+# installs Zag for rolldown. Apps that depend on the crate need neither.
+"aqua:tailwindlabs/tailwindcss" = "4.3.3"
+node = "26"
+
+[tasks.setup]
+description = "Install Zag.js for the glue bundle, and the browser-test tools"
+run = ["npm ci --prefix crates/brocanth-ui", "npm install"]
+[tasks.assets]
+description = "Rebuild the committed CSS and JS bundle (Tailwind + rolldown)"
+run = "cargo build -p brocanth-ui --features rebuild-assets"
+[tasks.build]
+depends = ["assets"]
+run = "cargo build --workspace"
+[tasks.test]
+run = "cargo test --workspace"
+[tasks.lint]
+run = "cargo clippy --all-targets -- -D warnings"
+[tasks.gallery]
+description = "Render the side-by-side gallery to target/gallery and serve it on :4100"
+depends = ["gallery-export"]
+run = "python3 -m http.server -d target/gallery 4100"
+[tasks.browser-test]
+description = "Check the dialog glue in headless Chromium against the gallery"
+depends = ["gallery-export"]
+run = """
+python3 -m http.server -d target/gallery 4100 >/dev/null 2>&1 & server=$!
+trap 'kill $server' EXIT
+sleep 0.5
+SHOTS=target node tests/browser.mjs
+"""
+[tasks.gallery-export]
+depends = ["assets"]
+run = "rm -rf target/gallery && cargo run -p gallery -- target/gallery"
+[tasks.ci]
+depends = ["build", "lint", "test"]

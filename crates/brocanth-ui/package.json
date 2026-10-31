@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "description": "Zag.js sources for the glue bundle. Only the brocanth-ui repo needs these; consumers get the committed bundle.",
+  "dependencies": {
+    "@zag-js/dialog": "1.47.0",
+    "@zag-js/vanilla": "1.47.0"
+  }
+}

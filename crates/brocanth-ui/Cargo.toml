@@ -1,0 +1,21 @@
+[package]
+name = "brocanth-ui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Design-system components for brocanth apps: rsx markup, Tailwind classes, Zag.js glue for stateful parts."
+publish = false
+
+[features]
+# Rebuild the committed assets: Tailwind CSS and the rolldown glue bundle.
+# Only the brocanth-ui repo turns it on (mise tasks do). An app gets the
+# committed files and compiles neither rolldown nor Node packages.
+rebuild-assets = ["dep:brocanth-bundle"]
+
+[dependencies]
+brocanth-assets.workspace = true
+rsx.workspace = true
+
+[build-dependencies]
+brocanth-bundle = { workspace = true, optional = true }

@@ -1,0 +1,94 @@
+/*
+ * The Tailwind side of the theme. Components use only these utility names
+ * (`bg-primary`, `rounded-md`, `shadow-control`, `h-control`, ...). Each
+ * name reads a `--ui-*` variable, and a theme file sets those variables.
+ * So a theme changes colour, radius, type, shadow and control size, and
+ * never the markup.
+ *
+ * The colour names are shadcn's, so a shadcn class list ports unchanged.
+ * The extra tokens (shadow, control size, weight, overlay) exist because
+ * the Stripe docs look differs from shadcn in more than colour.
+ *
+ * An app that runs its own Tailwind imports this file, the theme files,
+ * and adds `@source` for this crate's `src/` (see examples/gallery).
+ */
+
+@theme inline {
+  --color-background: var(--ui-background);
+  --color-foreground: var(--ui-foreground);
+  --color-heading: var(--ui-heading);
+  --color-card: var(--ui-card);
+  --color-card-foreground: var(--ui-card-foreground);
+  --color-popover: var(--ui-popover);
+  --color-popover-foreground: var(--ui-popover-foreground);
+  --color-primary: var(--ui-primary);
+  --color-primary-hover: var(--ui-primary-hover);
+  --color-primary-foreground: var(--ui-primary-foreground);
+  --color-secondary: var(--ui-secondary);
+  --color-secondary-foreground: var(--ui-secondary-foreground);
+  --color-secondary-border: var(--ui-secondary-border);
+  --color-muted: var(--ui-muted);
+  --color-muted-foreground: var(--ui-muted-foreground);
+  --color-accent: var(--ui-accent);
+  --color-accent-foreground: var(--ui-accent-foreground);
+  --color-destructive: var(--ui-destructive);
+  --color-destructive-foreground: var(--ui-destructive-foreground);
+  --color-success: var(--ui-success);
+  --color-success-muted: var(--ui-success-muted);
+  --color-link: var(--ui-link);
+  --color-border: var(--ui-border);
+  --color-input: var(--ui-input);
+  --color-ring: var(--ui-ring);
+  --color-overlay: var(--ui-overlay);
+  --color-chart-1: var(--ui-chart-1);
+  --color-chart-2: var(--ui-chart-2);
+  --color-chart-3: var(--ui-chart-3);
+  --color-chart-4: var(--ui-chart-4);
+  --color-chart-5: var(--ui-chart-5);
+
+  --radius-sm: var(--ui-radius-sm);
+  --radius-md: var(--ui-radius-md);
+  --radius-lg: var(--ui-radius-lg);
+  --radius-xl: var(--ui-radius-xl);
+  --radius-badge: var(--ui-radius-badge);
+
+  --font-sans: var(--ui-font-sans);
+  --font-mono: var(--ui-font-mono);
+  --font-weight-control: var(--ui-weight-control);
+  --font-weight-heading: var(--ui-weight-heading);
+
+  --shadow-control: var(--ui-shadow-control);
+  --shadow-overlay: var(--ui-shadow-overlay);
+
+  /* `h-control`, `h-control-sm`, `h-control-lg` */
+  --spacing-control: var(--ui-control-h);
+  --spacing-control-sm: var(--ui-control-h-sm);
+  --spacing-control-lg: var(--ui-control-h-lg);
+
+  --animate-overlay-in: ui-fade-in 150ms ease-out;
+  --animate-content-in: ui-content-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ui-fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes ui-content-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* A themed subtree gets the theme's page colours. A portaled overlay
+     part also carries `data-theme` (for the variables), but it must stay
+     transparent: it is a full-screen layer. */
+  body,
+  [data-theme]:not([data-ui-portaled]) {
+    @apply bg-background text-foreground font-sans;
+  }
+  [data-ui-portaled] {
+    @apply text-foreground font-sans;
+  }
+}

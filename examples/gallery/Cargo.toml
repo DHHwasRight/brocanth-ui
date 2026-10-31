@@ -1,0 +1,12 @@
+[package]
+name = "gallery"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+description = "Renders every component twice, under the shadcn theme and the Stripe docs theme, to static files."
+
+[dependencies]
+brocanth-ui.workspace = true
+rsx.workspace = true

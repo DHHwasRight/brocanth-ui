@@ -1,0 +1,96 @@
+/*
+ * shadcn/ui default theme (v4, "neutral" base colour).
+ * The default: it applies on :root and under [data-theme="shadcn"].
+ */
+
+:root,
+[data-theme="shadcn"] {
+  --ui-background: oklch(1 0 0);
+  --ui-foreground: oklch(0.145 0 0);
+  --ui-heading: oklch(0.145 0 0);
+  --ui-card: oklch(1 0 0);
+  --ui-card-foreground: oklch(0.145 0 0);
+  --ui-popover: oklch(1 0 0);
+  --ui-popover-foreground: oklch(0.145 0 0);
+  --ui-primary: oklch(0.205 0 0);
+  --ui-primary-hover: oklch(0.205 0 0 / 90%);
+  --ui-primary-foreground: oklch(0.985 0 0);
+  --ui-secondary: oklch(0.97 0 0);
+  --ui-secondary-foreground: oklch(0.205 0 0);
+  --ui-secondary-border: transparent;
+  --ui-muted: oklch(0.97 0 0);
+  --ui-muted-foreground: oklch(0.556 0 0);
+  --ui-accent: oklch(0.97 0 0);
+  --ui-accent-foreground: oklch(0.205 0 0);
+  --ui-destructive: oklch(0.577 0.245 27.325);
+  --ui-destructive-foreground: oklch(0.985 0 0);
+  --ui-success: oklch(0.527 0.154 150.069);
+  --ui-success-muted: oklch(0.962 0.044 156.743);
+  --ui-link: oklch(0.205 0 0);
+  --ui-border: oklch(0.922 0 0);
+  --ui-input: oklch(0.922 0 0);
+  --ui-ring: oklch(0.708 0 0);
+  --ui-overlay: oklch(0 0 0 / 50%);
+  --ui-chart-1: oklch(0.646 0.222 41.116);
+  --ui-chart-2: oklch(0.6 0.118 184.704);
+  --ui-chart-3: oklch(0.398 0.07 227.392);
+  --ui-chart-4: oklch(0.828 0.189 84.429);
+  --ui-chart-5: oklch(0.769 0.188 70.08);
+
+  /* shadcn derives the scale from one --radius of 0.625rem. */
+  --ui-radius-sm: calc(0.625rem - 4px);
+  --ui-radius-md: calc(0.625rem - 2px);
+  --ui-radius-lg: 0.625rem;
+  --ui-radius-xl: calc(0.625rem + 4px);
+  --ui-radius-badge: calc(0.625rem - 2px);
+
+  --ui-font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --ui-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --ui-weight-control: 500;
+  --ui-weight-heading: 600;
+
+  --ui-shadow-control: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ui-shadow-overlay: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  --ui-control-h: 2.25rem;
+  --ui-control-h-sm: 2rem;
+  --ui-control-h-lg: 2.5rem;
+
+  /* Table header: sentence case, body size. */
+  --ui-table-head-size: 0.875rem;
+  --ui-table-head-tracking: normal;
+  --ui-table-head-color: var(--ui-heading);
+  --ui-table-head-case: none;
+}
+
+.dark,
+[data-theme="shadcn"].dark {
+  --ui-background: oklch(0.145 0 0);
+  --ui-foreground: oklch(0.985 0 0);
+  --ui-heading: oklch(0.985 0 0);
+  --ui-card: oklch(0.205 0 0);
+  --ui-card-foreground: oklch(0.985 0 0);
+  --ui-popover: oklch(0.205 0 0);
+  --ui-popover-foreground: oklch(0.985 0 0);
+  --ui-primary: oklch(0.922 0 0);
+  --ui-primary-hover: oklch(0.922 0 0 / 90%);
+  --ui-primary-foreground: oklch(0.205 0 0);
+  --ui-secondary: oklch(0.269 0 0);
+  --ui-secondary-foreground: oklch(0.985 0 0);
+  --ui-muted: oklch(0.269 0 0);
+  --ui-muted-foreground: oklch(0.708 0 0);
+  --ui-accent: oklch(0.269 0 0);
+  --ui-accent-foreground: oklch(0.985 0 0);
+  --ui-destructive: oklch(0.704 0.191 22.216);
+  --ui-success: oklch(0.723 0.219 149.579);
+  --ui-success-muted: oklch(0.266 0.065 152.934);
+  --ui-link: oklch(0.985 0 0);
+  --ui-border: oklch(1 0 0 / 10%);
+  --ui-input: oklch(1 0 0 / 15%);
+  --ui-ring: oklch(0.556 0 0);
+  --ui-chart-1: oklch(0.488 0.243 264.376);
+  --ui-chart-2: oklch(0.696 0.17 162.48);
+  --ui-chart-3: oklch(0.769 0.188 70.08);
+  --ui-chart-4: oklch(0.627 0.265 303.9);
+  --ui-chart-5: oklch(0.645 0.246 16.439);
+}

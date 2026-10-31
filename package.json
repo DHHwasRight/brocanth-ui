@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "Test tools only. The Zag.js sources live in crates/brocanth-ui/package.json.",
+  "devDependencies": {
+    "playwright-core": "1.60.0"
+  }
+}

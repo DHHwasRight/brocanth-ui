@@ -1,0 +1,13 @@
+/*
+ * An app that runs its own Tailwind. It imports brocanth-ui's tokens and
+ * themes, and scans brocanth-ui's sources next to its own. A path
+ * dependency makes the path stable; see the README for a git dependency.
+ */
+@import "tailwindcss" source(none);
+@import "../../../crates/brocanth-ui/styles/theme.css";
+@import "../../../crates/brocanth-ui/styles/themes/shadcn.css";
+@import "../../../crates/brocanth-ui/styles/themes/stripe.css";
+
+@source "../../../crates/brocanth-ui/src";
+@source "../../../crates/brocanth-ui/assets/brocanth-ui/_glue";
+@source "../src";

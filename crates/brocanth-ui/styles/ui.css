@@ -1,0 +1,12 @@
+/*
+ * Entry point for the shipped stylesheet. build.rs runs the Tailwind CLI on
+ * this file. `source(none)` stops Tailwind from scanning the working
+ * directory; only the paths below are scanned.
+ */
+@import "tailwindcss" source(none);
+@import "./theme.css";
+@import "./themes/shadcn.css";
+@import "./themes/stripe.css";
+
+@source "../src";
+@source "../assets/brocanth-ui/_glue";
