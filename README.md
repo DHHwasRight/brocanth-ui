@@ -1,72 +1,69 @@
 # brocanth-ui
 
-Design-system components for brocanth apps. The inventory is shadcn/ui's.
-Two themes ship: **shadcn/ui** (default) and **docs.stripe.com**. The
-markup is the same for both; only CSS variables differ.
+Every shadcn/ui component for brocanth apps, with as little JavaScript as
+possible. Two themes ship: **shadcn/ui** (default) and **docs.stripe.com**.
+The markup is the same for both; only CSS variables differ.
 
 - **Markup:** rsx components, rendered on the server. There is no client VDOM.
-- **Style:** Tailwind v4 classes that read theme variables.
-- **Behaviour:** static components ship no JavaScript. Stateful components
-  use a Zag.js machine through one small glue pattern. rolldown
-  (`brocanth-bundle`) bundles the glue at build time.
+- **Style:** Tailwind v4 classes that read theme variables. Every colour is a
+  `light-dark()` pair, so dark mode follows the system or `color-scheme`.
+- **Behaviour, in this order of preference:**
+  1. HTML and CSS: `<dialog>`, `popover`, invoker commands, anchor
+     positioning, `<details name>`, `:has()`. 45 of 56 components.
+  2. A small TypeScript glue file, under 1 KB: carousel, date picker.
+  3. A Zag.js machine, loaded the first time a page renders that kind:
+     menus, select, combobox, command, tabs, toast, resizable panels.
 
 ```
-mise run gallery        # both themes side by side, http://localhost:4100
-mise run browser-test   # drives the dialogs in headless Chromium
+mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
+mise run gallery        # every component, both themes, http://localhost:4100
+mise run browser-test   # 24 checks in headless Chromium
 ```
 
-## Status
-
-| Component | State | JS |
-|---|---|---|
-| Button, ButtonLink | done | none |
-| Input, Label, Field | done | none |
-| Badge | done | none |
-| Card | done | none |
-| Table | done | none |
-| **Dialog** (+ alert dialog) | **done, end to end** | Zag `dialog`, 20 KB gzip, loaded on first use |
-| everything else | see [docs/punch-list.md](docs/punch-list.md) | |
+See [docs/components.md](docs/components.md) for each component's JS cost,
+and where Zag's DOM expectations needed a workaround.
 
 ## Layout
 
 ```
-Cargo.toml                       workspace: the crate + the gallery
-mise.toml                        toolchain (Rust 1.98, Tailwind 4.3.3, Node) and tasks
+Cargo.toml                    workspace: the crate + the gallery
+mise.toml                     Rust 1.98, Tailwind 4.3.3, Node; tasks
 crates/brocanth-ui/
-  build.rs                       feature `rebuild-assets`: Tailwind CLI + brocanth-bundle
-  package.json                   Zag.js versions (sources for the bundle)
+  build.rs                    feature `rebuild-assets`: Tailwind CLI + brocanth-bundle (rolldown)
+  package.json, tsconfig.json Zag 1.47.0 and TypeScript 7, for the bundle and `mise run typecheck`
   styles/
-    ui.css                       Tailwind entry for the shipped stylesheet
-    theme.css                    Tailwind @theme: utility names -> --ui-* variables
-    themes/shadcn.css            --ui-* values, shadcn (light + dark)
-    themes/stripe.css            --ui-* values, Stripe docs (light + derived dark)
+    ui.css                    Tailwind entry for the shipped stylesheet
+    theme.css                 @theme: utility names -> --ui-* variables; native overlay and chart rules
+    themes/shadcn.css         --ui-* values, light-dark() pairs
+    themes/stripe.css         --ui-* values: Sail tokens (light), d3set gallery navy (dark)
   src/
-    lib.rs                       components module, variants, class helpers
-    variants.rs                  ButtonVariant, ButtonSize, BadgeVariant -> class lists
-    assets.rs                    brocanth_assets::assets!("assets", "public")
-    components/*.rsx             button, input, badge, card, table, dialog, head
+    components/*.rsx          56 components, one file per shadcn component (or family)
+    charts/chart.rsx          Chart (feature `charts`, d3set-ssr)
+    variants.rs, icons.rs     button/badge/input classes; inline Lucide icons
+    date.rs                   civil dates for the calendar, no dependency
+    assets.rs                 brocanth_assets::assets!("assets", "public")
   assets/brocanth-ui/
-    _boot.js                     glue entry (bundled to boot.js)
-    _glue/zag.js                 the one glue pattern: defineComponent()
-    _glue/dialog.js              dialog: machine + part map
-    boot.js, ui.css              build outputs, committed
-  public/brocanth-ui/chunks/     one chunk per kind, committed
-examples/gallery/                static export: both themes side by side
-tests/browser.mjs                headless Chromium checks for the glue
-docs/punch-list.md               the remaining components, difficulty, Zag flags
+    _boot.ts                  entry: mounts [data-ui] kinds, dp-swap hooks, two platform shims
+    _glue/zag.ts              the one Zag pattern: defineComponent()
+    _glue/<kind>.ts           tabs, menu, select, combobox, command, resizable, toaster;
+                              carousel and date-picker (no Zag)
+    boot.js, ui.css           build outputs, committed
+  public/brocanth-ui/chunks/  one chunk per kind + shared Zag chunks, committed
+examples/gallery/             every component under both themes, in the d3set gallery layout
+tests/browser.mjs             24 checks in headless Chromium
+docs/components.md            JS cost per component, Zag workarounds, known gaps
 ```
 
 ## Use it in a brocanth app
 
-1. Add the dependency. Use the same `rsx` source as the app, or rsx makes
-   two `Template` traits.
+1. Add the dependency, with the same `rsx` source as the app:
 
    ```toml
    brocanth-ui = { git = "https://github.com/DHHwasRight/brocanth-ui.git", branch = "main" }
+   # features = ["charts"] for the Chart component (brings d3set-ssr and jt)
    ```
 
-2. Serve the crate's files next to the app's own. Put this in `serve_asset`
-   in `src/app.rs`:
+2. Serve the crate's files next to the app's own, in `serve_asset`:
 
    ```rust
    if let Some(asset) = brocanth_ui::assets::lookup(&request.path) {
@@ -74,165 +71,116 @@ docs/punch-list.md               the remaining components, difficulty, Zag flags
    }
    ```
 
-   Every path starts with `/brocanth-ui/`, so it cannot collide with the
-   app's own files. For a static export, also pass
+   Every path starts with `/brocanth-ui/`. For a static export, also pass
    `brocanth_ui::assets::ASSETS` to `Export::assets`.
 
-3. Put `<UiHead />` in the layout's `<head>`. It writes the stylesheet link
-   and one `<script type="module">`. There is no inline script, so the
-   default CSP needs no change.
+3. Put `<UiHead />` in the layout's `<head>`: one stylesheet, one
+   `<script type="module">`, no inline script (the default CSP holds).
+   With a toast, add `<Toaster id="toaster" placement="bottom-end" />` to
+   the layout.
 
 4. Call the components:
 
    ```rust
+   use brocanth_ui::components::dialog::{Dialog, DialogClose, DialogFooter, DialogTrigger};
    use brocanth_ui::components::button::Button;
-   use brocanth_ui::components::dialog::{Dialog, DialogClose, DialogContent, DialogFooter, DialogTrigger};
    use brocanth_ui::{ButtonSize, ButtonVariant};
 
-   pub fn Invite() -> Element {
-       <Dialog id="invite" role="dialog">
-           <DialogTrigger variant={ButtonVariant::Primary}>Invite</DialogTrigger>
-           <DialogContent title="Invite a teammate" description="They get an email.">
-               <DialogFooter>
-                   <DialogClose variant={ButtonVariant::Outline}>Cancel</DialogClose>
-                   <Button variant={ButtonVariant::Primary} size={ButtonSize::Md} attrs={&[("dp-post", "/invites")]}>Send</Button>
-               </DialogFooter>
-           </DialogContent>
-       </Dialog>
-   }
+   <DialogTrigger target="invite" variant={ButtonVariant::Primary}>Invite</DialogTrigger>
+   <Dialog id="invite" title="Invite a teammate" description="They get an email.">
+       <form dp-post="/invites" class="grid gap-4">
+           <DialogFooter>
+               <DialogClose target="invite" variant={ButtonVariant::Outline}>Cancel</DialogClose>
+               <Button variant={ButtonVariant::Primary} size={ButtonSize::Md} attrs={&[("type", "submit")]}>Send</Button>
+           </DialogFooter>
+       </form>
+   </Dialog>
    ```
 
-   rsx rules that apply here:
-   - Every parameter is required.
-   - `attrs` takes `&[]` when you have none.
-   - A cross-crate component that takes children needs a children block.
+   rsx rules: every parameter is required (`attrs={&[]}` when you have
+   none), and a cross-crate component that takes children needs a children
+   block. Ids that name an anchor (popover, tooltip, hover card, menus)
+   must be CSS identifiers: letters, digits, `-`, `_`.
 
-5. Pick the theme with `data-theme="stripe"` on `<html>` or on any subtree.
-   Add `class="dark"` for dark mode.
+5. Pick the theme with `data-ui-theme="stripe"` on `<html>` or any subtree.
+   Dark mode follows the system; `class="dark"` or `data-theme="dark"` on
+   any ancestor forces it.
 
 ### Two ways to get the CSS
 
 | Mode | When | How |
 |---|---|---|
 | Shipped `ui.css` | The app does not run Tailwind, or uses brocanth-ui as a git dependency | `<UiHead />` |
-| The app's own Tailwind | The app runs Tailwind and uses brocanth-ui as a **path** dependency | Import `styles/theme.css` and `styles/themes/*.css`, add `@source` for the crate's `src/` and `assets/brocanth-ui/_glue/`, then use `<UiScripts />` (see `examples/gallery/styles/gallery.css`) |
-
-Do not point `@source` into `~/.cargo`, because the path changes with each
-version. brocanth-admin has the same rule.
+| The app's own Tailwind | The app runs Tailwind and uses brocanth-ui as a **path** dependency | Import `styles/theme.css` and `styles/themes/*.css`, `@source` the crate's `src/` and `assets/brocanth-ui/_glue/`, use `<UiScripts />`. See `examples/gallery/styles/gallery.css`. |
 
 ## Theming
 
-Theming is only Tailwind config and CSS variables:
+Theming is Tailwind config and CSS variables only. `theme.css` maps every
+utility to a `--ui-*` variable; a theme file sets the variables; components
+never name a colour, radius or size. Every colour is a `light-dark()` pair,
+so one theme file covers light and dark.
 
-- `theme.css` maps every utility name to a `--ui-*` variable.
-- A theme file sets those variables.
-- Components never name a colour, radius or size directly.
-
-The colour names are shadcn's, so a shadcn class list ports unchanged. The
-Stripe look differs from shadcn in more than colour, so the token set adds
-some names:
-
-| Token (utility) | shadcn | docs.stripe.com |
+| Token | shadcn | docs.stripe.com |
 |---|---|---|
-| `--ui-primary` (`bg-primary`) | `oklch(0.205 0 0)`, near black | `#625afa`, blurple |
-| `--ui-foreground` / `--ui-heading` | near black / near black | `#414552` / `#1a1b25` |
-| `--ui-secondary` + `--ui-secondary-border` | grey fill, no border | white fill, `#d5dbe1` border |
-| `--ui-shadow-control` (`shadow-control`) | `0 1px 2px rgb(0 0 0/.05)` | `0 1px 1px rgb(0 0 0/.12), 0 2px 5px rgb(60 66 87/.08)` |
-| `--ui-shadow-overlay` (`shadow-overlay`) | Tailwind `shadow-lg` | `0 15px 35px rgb(60 66 87/.12), 0 5px 15px rgb(0 0 0/.12)` |
-| `--ui-control-h` (`h-control`) | 36px | 32px |
-| `--ui-weight-control` (`font-control`) | 500 | 600 |
-| `--ui-radius-*` | 6 / 8 / 10 / 14px (from `--radius: .625rem`) | 4 / 6 / 8 / 10px |
-| `--ui-radius-badge` (`rounded-badge`) | 8px | 4px |
-| `--ui-table-head-*` | 14px, sentence case | 12px, uppercase, `0.04em`, `#687385` |
-| `--ui-font-mono` | system mono | `Source Code Pro` |
+| `--ui-primary` | near black / near white | `#625afa` / `#9d97ff` |
+| `--ui-background` (dark) | `oklch(0.145 0 0)` | `#0a1929` (d3set navy) |
+| `--ui-secondary` + `-border` | grey fill, no border | white fill, `#d5dbe1` border |
+| `--ui-shadow-control` | `0 1px 2px rgb(0 0 0/.05)` | `0 1px 1px rgb(0 0 0/.12), 0 2px 5px rgb(60 66 87/.08)` |
+| `--ui-control-h` | 36px | 32px |
+| `--ui-weight-control` | 500 | 600 |
+| `--ui-radius-*` | 6 / 8 / 10 / 14px | 4 / 6 / 8 / 10px |
+| `--ui-tabs-*` | a pill on a muted track | an underline on a divider |
+| `--ui-table-head-*` | 14px, sentence case | 12px, uppercase, tracked, muted |
+| `--ui-tooltip` | the primary colour | near black, in both schemes |
+| `--ui-chart-1..5` | shadcn's chart palette | Stripe purple, blue, lavender, orange, green |
 
-Sources:
-- The Stripe values are the Sail tokens that docs.stripe.com ships as CSS
-  variables (read 2026-10-31).
-- Stripe's text face, Sohne, needs a licence. The theme uses the system
-  stack that the docs fall back to.
-- The Stripe dark theme is derived from the same grey scale. Stripe did
-  not publish it.
+Charts follow the theme too: `theme.css` maps d3set's `--d3s-series-N` to
+`--ui-chart-N`.
 
-## The glue pattern
+## The glue pattern (TypeScript)
 
-The server owns the structure, and Zag adds state and behaviour.
+The server owns the structure; Zag adds state and behaviour.
 
-1. **The rsx markup:**
-   - The root has `data-ui="<kind>"` and a unique `id`.
-   - Each node that Zag drives has `data-part="<part>"`.
-   - The server renders the closed state (`hidden`, `data-state="closed"`),
-     so the page is correct before the JS loads.
-2. **`_boot.js`** (about 1 KB once built):
-   - On load, it finds every `[data-ui]` and imports `./_glue/<kind>.js`.
-     Each import is its own chunk, loaded on first use.
-   - It mounts on `dp:afterSwap`.
-   - It unmounts on `dp:beforeSwap`, but only for the swap styles that
-     remove nodes.
-3. **`_glue/zag.js`** has `defineComponent({ machine, connect, props, parts, portal })`. On mount, it:
-   - starts a `VanillaMachine` with props from the root's `data-*` attributes,
-   - subscribes to it,
-   - on each change, calls `connect()` and runs `spreadProps()` on every
-     `[data-part]` node that the root owns.
-
-   A part function takes `(api, el)`, so per-item props come from
-   `el.dataset` (tabs, menu items).
-4. **One file per kind.** `_glue/dialog.js` is 46 lines: the machine, the
-   props, a part map, and `portal: ["backdrop", "positioner"]`.
-
-To add a kind:
-1. Add the package to `crates/brocanth-ui/package.json`.
-2. Write `_glue/<kind>.js`.
-3. Add one line to `kinds` in `_boot.js`.
-4. Write the rsx file.
-5. Run `mise run assets`.
+1. **rsx markup:** the root has `data-ui="<kind>"` and a unique `id`; each
+   node Zag drives has `data-part`. The server renders the initial state, so
+   the page is right before the glue loads.
+2. **`_boot.ts`** (1.1 KB): mounts each `[data-ui]` root, importing
+   `_glue/<kind>.ts` on first use; unmounts before a dp-swap that removes
+   nodes, mounts after. It has no static import, so no chunk imports the
+   entry back. It also holds two platform shims (`closedby`, tooltip
+   Escape).
+3. **`_glue/zag.ts`**: `defineComponent({ machine, connect, setup, props,
+   parts, portal })`, typed against Zag's own types. `setup` builds
+   per-instance context (a collection read from the item nodes); `parts`
+   maps each `data-part` to `(api, el, ctx) => attrs`.
+4. **One file per kind**, 25 to 60 lines. To add one: add the package to
+   `crates/brocanth-ui/package.json`, write `_glue/<kind>.ts`, add a line
+   to `kinds` in `_boot.ts`, write the rsx, run `mise run assets`.
 
 ## Build
 
-The built files are **committed**: `ui.css`, `boot.js` and the chunks. An
-app that depends on the crate does not need Node or the Tailwind CLI, and it
-does not compile rolldown.
+The built files are committed, so an app needs neither Node nor the
+Tailwind CLI, and does not compile rolldown. `mise run assets`:
 
-`mise run assets` builds with `--features rebuild-assets`:
-
-1. The Tailwind CLI compiles `styles/ui.css`. Only the paths that the
-   `@source` lines name are scanned.
-2. `brocanth_bundle::build()` runs rolldown on `_boot.js`, using Zag from
-   `node_modules`. rolldown replaces `process.env.NODE_ENV` for the browser
-   platform.
-3. `assets!` embeds both folders. `boot.js` gets a fingerprint. The chunks
-   keep rolldown's hashed names, because the entry imports them by
-   relative URL.
-
-`mise run setup` installs the npm packages once.
+1. type-checks the glue (`tsc --noEmit`, TypeScript 7),
+2. runs the Tailwind CLI on `styles/ui.css`,
+3. runs `brocanth_bundle::build()`: rolldown compiles `_boot.ts` and the
+   glue, with Zag from `node_modules`, into `boot.js` and the chunks.
 
 ## Decisions
 
-- **Committed build outputs, behind a feature.** brocanth-admin commits its
-  CSS for the same reason. An app's build must not need Node, and it must
-  not compile rolldown for files that never change in the app.
-- **No static import in `_boot.js`.** A module that the entry shares with a
-  chunk makes the chunk import the entry back. The entry's name is
-  fingerprinted, so `brocanth-bundle` refuses that. The entry finds
-  instances through `Symbol.for("brocanth-ui.instance")` on the root.
-- **Overlays are portaled by the glue.** rsx renders an overlay next to its
-  trigger. Any ancestor with `transform`, `filter` or `overflow: hidden`
-  would clip or misplace a `position: fixed` overlay. The glue moves the
-  listed parts to `#ui-portal` and copies `data-theme` and `.dark` onto
-  them. On unmount, it puts them back, or removes them if a swap removed
-  the root.
-- **The close-trigger id goes to one node.** Zag gives every close trigger
-  the same id, and an alert dialog focuses that id on open. The footer
-  `DialogClose` (`data-close-primary`) keeps the id, because it is the safe
-  action.
-- **`Button` defaults to `type="button"`.** A button in a form then does not
-  submit it by accident. `attrs={&[("type", "submit")]}` overrides it.
+- **The platform first, Zag last.** A component uses Zag only where HTML
+  and CSS have no answer. Invoker commands (Baseline Dec 2025) and anchor
+  positioning (Baseline Jan 2026) took dialog, sheet, popover, tooltip and
+  hover card off Zag; `<details name>` took the accordion.
+- **Native overlays need no portal.** `<dialog>` and `popover` render in
+  the top layer, so no ancestor clips them, and they keep their DOM place,
+  so they inherit the theme.
+- **`data-ui-theme`, not `data-theme`.** d3set and the artifact viewer put
+  `data-theme="light|dark"` on `<html>`; the design-system theme must not
+  collide with it.
+- **Zag owns ids and parts, the server keeps them.** The glue passes
+  `ids.root` and records each node's part at mount.
+- **Committed build outputs, behind a feature.** As brocanth-admin does.
 
-## Known gaps
-
-- **Exit animations.** Zag sets `hidden` as soon as an overlay closes, so
-  only the enter animation runs. The fix is `@zag-js/presence` per overlay
-  part, in `defineComponent`.
-- **Serving files from more than one crate.** brocanth has no seam for
-  this, so each app chains `lookup` by hand. Widen `serve_asset` in the
-  brocanth CLI template to take several asset tables.
+See [docs/components.md](docs/components.md) for the known gaps.

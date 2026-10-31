@@ -60,7 +60,10 @@ mod tests {
             );
             found += 1;
         }
-        assert!(found > 0, "the entry imports at least the dialog chunk");
+        assert!(
+            found >= 9,
+            "the entry imports one chunk per kind, found {found}"
+        );
     }
 
     #[test]
@@ -78,7 +81,12 @@ mod tests {
     #[test]
     fn the_stylesheet_holds_both_themes() {
         let css = text("brocanth-ui/ui.css");
-        assert!(css.contains("[data-theme=stripe]") || css.contains("[data-theme=\"stripe\"]"));
-        assert!(css.contains("#625afa"));
+        assert!(css.contains("[data-ui-theme=stripe]"));
+        assert!(css.contains("[data-ui-theme=shadcn]"));
+        assert!(css.contains("#625afa"), "the Stripe brand colour");
+        assert!(
+            css.contains("light-dark("),
+            "tokens follow the colour scheme"
+        );
     }
 }

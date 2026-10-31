@@ -1,0 +1,1 @@
+const e=Symbol.for(`brocanth-ui.instance`);function t(t){return t[e]}function n(t,n){t[e]=n}function r(e,t,r){let i={...r,root:e,unmount(){t(),n(e,void 0)}};return n(e,i),i}export{r as n,n as r,t};

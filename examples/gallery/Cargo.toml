@@ -8,5 +8,5 @@ publish = false
 description = "Renders every component twice, under the shadcn theme and the Stripe docs theme, to static files."
 
 [dependencies]
-brocanth-ui.workspace = true
+brocanth-ui = { workspace = true, features = ["charts"] }
 rsx.workspace = true

@@ -8,6 +8,8 @@ use std::{env, fs, path::PathBuf};
 
 use rsx::Template;
 
+mod catalog;
+
 mod views {
     rsx::load_dir!("src/views");
 }

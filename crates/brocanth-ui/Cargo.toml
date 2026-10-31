@@ -12,9 +12,12 @@ publish = false
 # Only the brocanth-ui repo turns it on (mise tasks do). An app gets the
 # committed files and compiles neither rolldown nor Node packages.
 rebuild-assets = ["dep:brocanth-bundle"]
+# The Chart component: d3set-ssr, which also brings jt from git.
+charts = ["dep:d3set-ssr"]
 
 [dependencies]
 brocanth-assets.workspace = true
+d3set-ssr = { workspace = true, optional = true }
 rsx.workspace = true
 
 [build-dependencies]

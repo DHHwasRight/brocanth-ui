@@ -1,0 +1,70 @@
+//! One demo per catalog entry. `p` prefixes every id, so the two panes of
+//! a pair do not collide.
+
+use super::actions::*;
+use super::data::*;
+use super::forms::*;
+use super::layout::*;
+use super::overlays::*;
+
+pub fn Demo(slug: &str, p: &str) -> Element {
+    match slug {
+        "button" => <ButtonDemo />,
+        "button-group" => <ButtonGroupDemo />,
+        "toggle" => <ToggleDemo p={p} />,
+        "toggle-group" => <ToggleGroupDemo p={p} />,
+        "input" => <InputDemo p={p} />,
+        "input-group" => <InputGroupDemo p={p} />,
+        "input-otp" => <InputOtpDemo p={p} />,
+        "textarea" => <TextareaDemo p={p} />,
+        "checkbox" => <CheckboxDemo p={p} />,
+        "radio-group" => <RadioGroupDemo p={p} />,
+        "switch" => <SwitchDemo p={p} />,
+        "slider" => <SliderDemo p={p} />,
+        "native-select" => <NativeSelectDemo p={p} />,
+        "select" => <SelectDemo p={p} />,
+        "combobox" => <ComboboxDemo p={p} />,
+        "field" => <FieldDemo p={p} />,
+        "calendar" => <CalendarDemo p={p} />,
+        "date-picker" => <DatePickerDemo p={p} />,
+        "dialog" => <DialogDemo p={p} />,
+        "alert-dialog" => <AlertDialogDemo p={p} />,
+        "sheet" => <SheetDemo p={p} />,
+        "drawer" => <DrawerDemo p={p} />,
+        "popover" => <PopoverDemo p={p} />,
+        "hover-card" => <HoverCardDemo p={p} />,
+        "tooltip" => <TooltipDemo p={p} />,
+        "dropdown-menu" => <DropdownMenuDemo p={p} />,
+        "context-menu" => <ContextMenuDemo p={p} />,
+        "menubar" => <MenubarDemo p={p} />,
+        "command" => <CommandDemo p={p} />,
+        "toast" => <ToastDemo p={p} />,
+        "breadcrumb" => <BreadcrumbDemo />,
+        "navigation-menu" => <NavigationMenuDemo p={p} />,
+        "pagination" => <PaginationDemo />,
+        "tabs" => <TabsDemo p={p} />,
+        "sidebar" => <SidebarDemo />,
+        "table" => <TableDemo />,
+        "data-table" => <DataTableDemo />,
+        "chart" => <ChartDemo />,
+        "card" => <CardDemo p={p} />,
+        "badge" => <BadgeDemo />,
+        "avatar" => <AvatarDemo />,
+        "item" => <ItemDemo />,
+        "kbd" => <KbdDemo />,
+        "typography" => <TypographyDemo />,
+        "carousel" => <CarouselDemo p={p} />,
+        "alert" => <AlertDemo />,
+        "progress" => <ProgressDemo />,
+        "skeleton" => <SkeletonDemo />,
+        "spinner" => <SpinnerDemo />,
+        "empty" => <EmptyDemo />,
+        "accordion" => <AccordionDemo p={p} />,
+        "collapsible" => <CollapsibleDemo />,
+        "aspect-ratio" => <AspectRatioDemo />,
+        "separator" => <SeparatorDemo />,
+        "scroll-area" => <ScrollAreaDemo />,
+        "resizable" => <ResizableDemo p={p} />,
+        _ => <p>{slug}</p>,
+    }
+}

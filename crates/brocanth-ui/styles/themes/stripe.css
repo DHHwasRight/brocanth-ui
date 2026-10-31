@@ -1,50 +1,57 @@
 /*
- * docs.stripe.com look. Values come from the Sail tokens that the docs
- * page ships as CSS variables (read 2026-10-31):
+ * docs.stripe.com look, under [data-ui-theme="stripe"].
+ *
+ * Light values: the Sail tokens that the docs page ships as CSS variables
+ * (read 2026-10-31):
  *   gray:   50 #f6f8fa  100 #ebeef1  150 #d5dbe1  500 #687385
  *           700 #414552 (body text)  900 #1a1b25 (headings)
  *   purple: 400 #8d7ffa  500 #625afa (brand)  600 #513dd9
- *   red 500 #df1b41, green 500 #228403, blue 500 #0570de
+ *   red 500 #df1b41, green 500 #228403, orange 500 #c84801, blue 500 #0570de
  *   radius: small 4px, medium 8px, large 10px
+ * Dark values: the d3set gallery's navy palette
+ * (d3set/rust/gallery/assets/css/_gallery.css), after Stripe's dark surfaces.
  *
  * The docs use the licensed "Sohne" face. This theme uses the system stack
  * that the docs fall back to. Set --ui-font-sans if you hold a licence.
- *
- * Dark values are derived from the same scale, not copied from Stripe.
  */
 
-[data-theme="stripe"] {
-  --ui-background: #ffffff;
-  --ui-foreground: #414552;
-  --ui-heading: #1a1b25;
-  --ui-card: #ffffff;
-  --ui-card-foreground: #414552;
-  --ui-popover: #ffffff;
-  --ui-popover-foreground: #414552;
-  --ui-primary: #625afa;
-  --ui-primary-hover: #513dd9;
-  --ui-primary-foreground: #ffffff;
-  --ui-secondary: #ffffff;
-  --ui-secondary-foreground: #414552;
-  --ui-secondary-border: #d5dbe1;
-  --ui-muted: #f6f8fa;
-  --ui-muted-foreground: #687385;
-  --ui-accent: #f6f8fa;
-  --ui-accent-foreground: #30313d;
-  --ui-destructive: #df1b41;
-  --ui-destructive-foreground: #ffffff;
-  --ui-success: #228403;
-  --ui-success-muted: #d7f7c2;
-  --ui-link: #625afa;
-  --ui-border: #ebeef1;
-  --ui-input: #d5dbe1;
-  --ui-ring: #8d7ffa;
-  --ui-overlay: rgb(26 27 37 / 0.4);
-  --ui-chart-1: #625afa;
-  --ui-chart-2: #0570de;
-  --ui-chart-3: #b49cfc;
-  --ui-chart-4: #c84801;
-  --ui-chart-5: #228403;
+[data-ui-theme="stripe"] {
+  --ui-background: light-dark(#ffffff, #0a1929);
+  --ui-foreground: light-dark(#414552, #adbdcc);
+  --ui-heading: light-dark(#1a1b25, #f6f9fc);
+  --ui-card: light-dark(#ffffff, #0d1e31);
+  --ui-card-foreground: light-dark(#414552, #adbdcc);
+  --ui-popover: light-dark(#ffffff, #0f2236);
+  --ui-popover-foreground: light-dark(#414552, #adbdcc);
+  --ui-primary: light-dark(#625afa, #9d97ff);
+  --ui-primary-hover: light-dark(#513dd9, #b49cfc);
+  --ui-primary-foreground: light-dark(#ffffff, #0a1929);
+  --ui-secondary: light-dark(#ffffff, #0d1e31);
+  --ui-secondary-foreground: light-dark(#414552, #e6ebf1);
+  --ui-secondary-border: light-dark(#d5dbe1, #23364d);
+  --ui-muted: light-dark(#f6f8fa, #0f2236);
+  --ui-muted-foreground: light-dark(#687385, #8d9aab);
+  --ui-accent: light-dark(#f6f8fa, #12283f);
+  --ui-accent-foreground: light-dark(#30313d, #f6f9fc);
+  --ui-destructive: light-dark(#df1b41, #ff5c7a);
+  --ui-destructive-foreground: light-dark(#ffffff, #0a1929);
+  --ui-success: light-dark(#228403, #3ecf8e);
+  --ui-success-muted: light-dark(#d7f7c2, #0c2b22);
+  --ui-warning: light-dark(#c84801, #f5a623);
+  --ui-warning-muted: light-dark(#fcedb9, #33240b);
+  --ui-link: light-dark(#625afa, #9d97ff);
+  --ui-border: light-dark(#ebeef1, #23364d);
+  --ui-input: light-dark(#d5dbe1, #2f4661);
+  --ui-ring: light-dark(#8d7ffa, #9d97ff);
+  --ui-overlay: light-dark(rgb(26 27 37 / 0.4), rgb(0 0 0 / 0.6));
+  /* Stripe docs tooltips are dark in both schemes. */
+  --ui-tooltip: light-dark(#1a1b25, #f6f9fc);
+  --ui-tooltip-foreground: light-dark(#ffffff, #0a1929);
+  --ui-chart-1: light-dark(#625afa, #9d97ff);
+  --ui-chart-2: light-dark(#0570de, #4fb3ff);
+  --ui-chart-3: light-dark(#b49cfc, #d1befe);
+  --ui-chart-4: light-dark(#c84801, #f5a623);
+  --ui-chart-5: light-dark(#228403, #3ecf8e);
 
   --ui-radius-sm: 4px;
   --ui-radius-md: 6px;
@@ -52,8 +59,7 @@
   --ui-radius-xl: 10px;
   --ui-radius-badge: 4px;
 
-  --ui-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji";
+  --ui-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif;
   --ui-font-mono: "Source Code Pro", Menlo, Monaco, monospace;
   --ui-weight-control: 600;
   --ui-weight-heading: 700;
@@ -69,32 +75,16 @@
   /* Table header: small caps in the secondary text colour, as in the API reference. */
   --ui-table-head-size: 0.75rem;
   --ui-table-head-tracking: 0.04em;
-  --ui-table-head-color: #687385;
+  --ui-table-head-color: var(--ui-muted-foreground);
   --ui-table-head-case: uppercase;
-}
 
-[data-theme="stripe"].dark,
-.dark [data-theme="stripe"] {
-  --ui-background: #10111a;
-  --ui-foreground: #c0c8d2;
-  --ui-heading: #ffffff;
-  --ui-card: #1a1b25;
-  --ui-card-foreground: #c0c8d2;
-  --ui-popover: #1a1b25;
-  --ui-popover-foreground: #c0c8d2;
-  --ui-primary: #8d7ffa;
-  --ui-primary-hover: #b49cfc;
-  --ui-primary-foreground: #10111a;
-  --ui-secondary: #1a1b25;
-  --ui-secondary-foreground: #ebeef1;
-  --ui-secondary-border: #414552;
-  --ui-muted: #1a1b25;
-  --ui-muted-foreground: #87909f;
-  --ui-accent: #30313d;
-  --ui-accent-foreground: #ebeef1;
-  --ui-success-muted: #10331a;
-  --ui-link: #b49cfc;
-  --ui-border: #30313d;
-  --ui-input: #414552;
-  --ui-overlay: rgb(0 0 0 / 0.6);
+  /* Tabs: an underline on a divider, as on docs.stripe.com. */
+  --ui-tabs-list: transparent;
+  --ui-tabs-list-pad: 0px;
+  --ui-tabs-list-radius: 0px;
+  --ui-tabs-list-shadow: inset 0 -1px 0 0 var(--ui-border);
+  --ui-tabs-trigger-radius: 0px;
+  --ui-tabs-active: transparent;
+  --ui-tabs-active-text: var(--ui-primary);
+  --ui-tabs-active-shadow: inset 0 -2px 0 0 var(--ui-primary);
 }

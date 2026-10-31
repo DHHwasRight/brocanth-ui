@@ -1,7 +1,7 @@
 /*
- * An app that runs its own Tailwind. It imports brocanth-ui's tokens and
- * themes, and scans brocanth-ui's sources next to its own. A path
- * dependency makes the path stable; see the README for a git dependency.
+ * The gallery: an app that runs its own Tailwind with brocanth-ui's tokens
+ * and sources, and the d3set gallery's documentation layout and colours
+ * (d3set/rust/gallery/assets/css/_gallery.css) for its own chrome.
  */
 @import "tailwindcss" source(none);
 @import "../../../crates/brocanth-ui/styles/theme.css";
@@ -11,3 +11,96 @@
 @source "../../../crates/brocanth-ui/src";
 @source "../../../crates/brocanth-ui/assets/brocanth-ui/_glue";
 @source "../src";
+
+@layer components {
+  :root {
+    --g-ink: light-dark(#0a2540, #f6f9fc);
+    --g-text: light-dark(#425466, #adbdcc);
+    --g-muted: light-dark(#697386, #8d9aab);
+    --g-line: light-dark(#e6ebf1, #23364d);
+    --g-stage: light-dark(#f6f9fc, #0f2236);
+    --g-page: light-dark(#ffffff, #0a1929);
+    --g-top: light-dark(rgb(255 255 255 / 0.92), rgb(10 25 41 / 0.92));
+    --g-accent: light-dark(#635bff, #9d97ff);
+    --g-accent-soft: light-dark(#efedff, #241f57);
+    --g-live: light-dark(#0e8a5f, #3ecf8e);
+    --g-live-line: light-dark(#b7e4d3, #1d5a43);
+    --g-live-bg: light-dark(#edfaf4, #0c2b22);
+    --g-warn: light-dark(#a35a00, #f5a623);
+    --g-warn-line: light-dark(#f3d9a8, #5a4012);
+    --g-warn-bg: light-dark(#fff8eb, #2b200c);
+    --g-shadow: light-dark(rgb(10 37 64 / 0.04), rgb(0 0 0 / 0.3));
+    --g-radius: 8px;
+    --g-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif;
+    --g-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+
+  .g-body { margin: 0; font: 15px/24px var(--g-font); color: var(--g-text); background: var(--g-page); }
+  .g-body :where(a.g-link) { color: var(--g-accent); }
+  .g-code { font-family: var(--g-mono); font-size: 0.88em; line-height: 1; color: var(--g-ink); background: var(--g-stage); border: 1px solid var(--g-line); border-radius: 4px; padding: 1px 5px; }
+
+  /* Top bar */
+  .g-top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; gap: 32px; height: 64px; padding: 0 24px; background: var(--g-top); backdrop-filter: blur(8px); border-bottom: 1px solid var(--g-line); }
+  .g-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; color: var(--g-ink); letter-spacing: -0.01em; }
+  .g-brand-mark { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #635bff 0%, #00a8e8 100%); }
+  .g-top-nav { display: flex; gap: 22px; font-size: 14px; font-weight: 500; }
+  .g-top-nav a { color: var(--g-text); padding: 20px 0; border-bottom: 2px solid transparent; }
+  .g-top-nav a:hover { color: var(--g-ink); }
+  .g-top-nav a.is-current { color: var(--g-accent); border-bottom-color: var(--g-accent); }
+  .g-theme-switch { display: grid; margin-left: auto; place-items: center; width: 34px; height: 34px; padding: 0; color: var(--g-text); background: none; border: 1px solid var(--g-line); border-radius: 8px; cursor: pointer; }
+  .g-theme-switch:hover { color: var(--g-ink); background: var(--g-stage); }
+  .g-theme-switch svg { grid-area: 1 / 1; }
+  .g-theme-switch .sun { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .g-theme-switch .sun { display: block; }
+    :root:not([data-theme="light"]) .g-theme-switch .moon { display: none; }
+  }
+  :root[data-theme="dark"] .g-theme-switch .sun { display: block; }
+  :root[data-theme="dark"] .g-theme-switch .moon { display: none; }
+
+  /* Shell */
+  .g-shell { display: grid; grid-template-columns: 248px minmax(0, 1fr); }
+  .g-side { position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; padding: 24px 16px 48px 24px; border-right: 1px solid var(--g-line); }
+  .g-side-group { margin-bottom: 22px; }
+  .g-side-title { margin: 0 0 6px 8px; line-height: 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--g-ink); }
+  .g-side-link { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 8px; line-height: 22px; font-size: 14px; color: var(--g-text); border-radius: 6px; }
+  .g-side-link:hover { color: var(--g-ink); background: var(--g-stage); }
+  .g-side-link i { width: 6px; height: 6px; border-radius: 999px; background: var(--g-line); }
+  .g-side-link i.js-zag { background: var(--g-warn); }
+  .g-side-link i.js-glue { background: var(--g-accent); }
+  .g-main { min-width: 0; padding: 40px 48px 96px; }
+
+  /* Page */
+  .g-page { max-width: 1180px; }
+  .g-eyebrow { line-height: 20px; font-size: 13px; font-weight: 600; color: var(--g-accent); margin-bottom: 8px; }
+  .g-h1 { margin: 0 0 12px; font-size: 32px; line-height: 40px; font-weight: 700; letter-spacing: -0.02em; color: var(--g-ink); text-wrap: balance; }
+  .g-lead { margin: 0 0 24px; max-width: 760px; font-size: 18px; line-height: 28px; color: var(--g-text); }
+  .g-callout { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 0 0 8px; padding: 12px 16px; font-size: 14px; line-height: 22px; background: var(--g-stage); border: 1px solid var(--g-line); border-left: 3px solid var(--g-accent); border-radius: var(--g-radius); }
+  .g-legend { display: inline-flex; align-items: center; gap: 6px; }
+  .g-badge { display: inline-flex; align-items: center; gap: 6px; padding: 1px 8px; font-size: 12px; line-height: 20px; font-weight: 600; color: var(--g-muted); background: var(--g-page); border: 1px solid var(--g-line); border-radius: 999px; white-space: nowrap; }
+  .g-badge.js-none { color: var(--g-live); border-color: var(--g-live-line); background: var(--g-live-bg); }
+  .g-badge.js-glue { color: var(--g-accent); border-color: color-mix(in srgb, var(--g-accent) 35%, transparent); background: var(--g-accent-soft); }
+  .g-badge.js-zag { color: var(--g-warn); border-color: var(--g-warn-line); background: var(--g-warn-bg); }
+
+  /* Sections */
+  .g-section { scroll-margin-top: 80px; padding-top: 40px; }
+  .g-section-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .g-h2 { margin: 0; line-height: 28px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--g-ink); }
+  .g-group-title { margin: 56px 0 0; padding-bottom: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--g-muted); border-bottom: 1px solid var(--g-line); }
+  .g-muted { margin: 6px 0 14px; max-width: 760px; color: var(--g-muted); font-size: 14px; line-height: 22px; }
+  .g-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .g-pane { min-width: 0; border: 1px solid var(--g-line); border-radius: var(--g-radius); box-shadow: 0 1px 2px var(--g-shadow); overflow: clip; }
+  .g-pane-label { display: flex; justify-content: space-between; padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--g-muted); background: var(--g-stage); border-bottom: 1px solid var(--g-line); }
+  .g-pane-body { padding: 24px; }
+
+  @media (max-width: 1100px) {
+    .g-pair { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 960px) {
+    .g-shell { grid-template-columns: 1fr; }
+    .g-side { display: none; }
+    .g-main { padding: 24px 16px 64px; }
+    .g-top { padding: 0 16px; gap: 16px; }
+    .g-top-nav { display: none; }
+  }
+}

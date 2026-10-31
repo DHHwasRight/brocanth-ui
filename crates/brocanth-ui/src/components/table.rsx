@@ -22,7 +22,7 @@ pub fn TableRow(children: Element) -> Element {
 }
 
 pub fn TableHead(children: Element) -> Element {
-    <th class="h-10 whitespace-nowrap px-2 text-left align-middle font-control text-(length:--ui-table-head-size) tracking-(--ui-table-head-tracking) text-(--ui-table-head-color) [text-transform:var(--ui-table-head-case)]">
+    <th class={head_class()}>
         {children}
     </th>
 }
@@ -33,4 +33,8 @@ pub fn TableCell(children: Element) -> Element {
 
 pub fn TableCaption(children: Element) -> Element {
     <caption class="mt-4 text-sm text-muted-foreground">{children}</caption>
+}
+
+pub(crate) fn head_class() -> &'static str {
+    "h-10 whitespace-nowrap px-2 text-left align-middle font-control text-(length:--ui-table-head-size) tracking-(--ui-table-head-tracking) text-(--ui-table-head-color) [text-transform:var(--ui-table-head-case)]"
 }

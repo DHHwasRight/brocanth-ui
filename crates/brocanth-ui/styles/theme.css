@@ -35,11 +35,15 @@
   --color-destructive-foreground: var(--ui-destructive-foreground);
   --color-success: var(--ui-success);
   --color-success-muted: var(--ui-success-muted);
+  --color-warning: var(--ui-warning);
+  --color-warning-muted: var(--ui-warning-muted);
   --color-link: var(--ui-link);
   --color-border: var(--ui-border);
   --color-input: var(--ui-input);
   --color-ring: var(--ui-ring);
   --color-overlay: var(--ui-overlay);
+  --color-tooltip: var(--ui-tooltip);
+  --color-tooltip-foreground: var(--ui-tooltip-foreground);
   --color-chart-1: var(--ui-chart-1);
   --color-chart-2: var(--ui-chart-2);
   --color-chart-3: var(--ui-chart-3);
@@ -67,6 +71,8 @@
 
   --animate-overlay-in: ui-fade-in 150ms ease-out;
   --animate-content-in: ui-content-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-spin-slow: spin 1.5s linear infinite;
+  --animate-pulse-soft: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes ui-fade-in {
@@ -78,17 +84,115 @@
 }
 
 @layer base {
+  /* Light or dark: the system by default, forced by a class or by
+     data-theme on any ancestor (d3set and the artifact viewer set
+     data-theme on <html>). Every token is a light-dark() pair. */
+  :root { color-scheme: light dark; }
+  .light, [data-theme="light"] { color-scheme: light; }
+  .dark, [data-theme="dark"] { color-scheme: dark; }
+
   * {
     @apply border-border outline-ring/50;
   }
-  /* A themed subtree gets the theme's page colours. A portaled overlay
-     part also carries `data-theme` (for the variables), but it must stay
-     transparent: it is a full-screen layer. */
   body,
-  [data-theme]:not([data-ui-portaled]) {
+  [data-ui-theme]:not([data-ui-portaled]) {
     @apply bg-background text-foreground font-sans;
   }
   [data-ui-portaled] {
     @apply text-foreground font-sans;
   }
+
+  /* Native overlays (<dialog>, [popover]) live in the top layer, so no
+     ancestor clips them and no portal is needed. A modal dialog stops the
+     page behind it from scrolling, with no JavaScript. */
+  html:has(dialog:modal) {
+    overflow: hidden;
+  }
+  ::backdrop {
+    background: var(--ui-overlay);
+  }
+  /* Enter and exit transitions for native overlays: @starting-style for
+     the enter, allow-discrete so `display` waits for the exit. */
+  dialog, [popover] {
+    transition-property: opacity, transform, overlay, display;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition-behavior: allow-discrete;
+  }
+  dialog:not([open]), [popover]:not(:popover-open) {
+    opacity: 0;
+  }
+  @starting-style {
+    dialog[open], [popover]:popover-open { opacity: 0; transform: translateY(4px) scale(0.98); }
+  }
+  ::backdrop {
+    transition: opacity 150ms, overlay 150ms allow-discrete, display 150ms allow-discrete;
+  }
+  @starting-style {
+    dialog[open]::backdrop { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    dialog, [popover], ::backdrop { transition: none; }
+  }
+
+  /* Without anchor positioning, an anchored popover centres on the screen. */
+  @supports not (anchor-name: --a) {
+    [popover][data-anchored] { inset: 0; margin: auto; }
+  }
+
+  /* Zag toasts: the machine writes the position and the motion as CSS
+     variables on each toast; these rules apply them. */
+  .ui-toast {
+    translate: var(--x) var(--y);
+    scale: var(--scale);
+    z-index: var(--z-index);
+    height: var(--height);
+    opacity: var(--opacity);
+    will-change: translate, opacity, scale;
+    transition: translate 400ms, scale 400ms, opacity 400ms, height 400ms, box-shadow 200ms;
+    transition-timing-function: cubic-bezier(0.21, 1.02, 0.73, 1);
+  }
+  .ui-toast[data-state="closed"] {
+    transition: translate 400ms, scale 400ms, opacity 200ms;
+    transition-timing-function: cubic-bezier(0.06, 0.71, 0.55, 1);
+  }
+
+  /* d3set-ssr charts read --d3s-*; map them to the theme. Declared on
+     every themed root, so each subtree resolves its own theme. */
+  :root, [data-ui-theme] {
+    --d3s-series-0: var(--ui-chart-1);
+    --d3s-series-1: var(--ui-chart-2);
+    --d3s-series-2: var(--ui-chart-3);
+    --d3s-series-3: var(--ui-chart-4);
+    --d3s-series-4: var(--ui-chart-5);
+    --d3s-bg: var(--ui-background);
+    --d3s-surface: var(--ui-card);
+    --d3s-text: var(--ui-foreground);
+    --d3s-text-muted: var(--ui-muted-foreground);
+    --d3s-grid: var(--ui-border);
+    --d3s-axis: var(--ui-input);
+    --d3s-accent: var(--ui-primary);
+    --d3s-positive: var(--ui-success);
+    --d3s-warning: var(--ui-warning);
+    --d3s-negative: var(--ui-destructive);
+    --d3s-font: var(--ui-font-sans);
+    --d3s-font-axis: 11px;
+    --d3s-font-label: 12px;
+    --d3s-space-sm: 8px;
+    --d3s-radius: var(--ui-radius-md);
+  }
+  /* From d3set's style.css: the rules a server-rendered chart needs. */
+  .d3s-chart { width: 100%; position: relative; }
+  .d3s-chart svg { display: block; overflow: visible; user-select: none; }
+  .d3s-chart .tick text { fill: var(--d3s-text-muted); font-size: var(--d3s-font-axis); font-family: var(--d3s-font); }
+  .d3s-chart .domain { stroke: var(--d3s-axis); }
+  .d3s-chart .tick line { stroke: var(--d3s-grid); }
+  .d3s-chart text.d3s-label { fill: var(--d3s-text); font-size: var(--d3s-font-label); }
+  .d3s-legend { display: flex; flex-wrap: wrap; gap: var(--d3s-space-sm); margin-top: var(--d3s-space-sm); font-size: var(--d3s-font-label); color: var(--d3s-text-muted); }
+  .d3s-legend button { all: unset; display: inline-flex; align-items: center; }
+  .d3s-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 4px; border-radius: 2px; vertical-align: -1px; }
+
+  /* A details marker is drawn by the component, not the browser. */
+  summary { list-style: none; }
+  summary::-webkit-details-marker { display: none; }
 }

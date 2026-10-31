@@ -18,6 +18,8 @@
 //! `<head>`, and serve [`assets::lookup`] in front of the router.
 
 pub mod assets;
+pub mod date;
+pub mod icons;
 mod variants;
 
 pub use variants::{BadgeVariant, ButtonSize, ButtonVariant};
@@ -30,8 +32,16 @@ pub mod components {
     rsx::load_dir!("src/components");
 }
 
+/// The chart component (feature `charts`), and the d3set-ssr types it takes.
+#[cfg(feature = "charts")]
+pub mod charts {
+    pub use self::chart::Chart;
+    pub use d3set_ssr::{Agg, Row, Spec};
+    rsx::load_dir!("src/charts");
+}
+
 /// Class lists, for markup that is not one of the components.
 /// Each returns the same classes the matching component uses.
 pub mod class {
-    pub use crate::variants::{badge, button, input};
+    pub use crate::variants::{badge, button, input, input_bare};
 }

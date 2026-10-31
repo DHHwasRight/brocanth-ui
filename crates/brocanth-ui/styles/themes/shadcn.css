@@ -1,41 +1,49 @@
 /*
- * shadcn/ui default theme (v4, "neutral" base colour).
- * The default: it applies on :root and under [data-theme="shadcn"].
+ * shadcn/ui default theme (v4, "neutral" base colour). The default: it
+ * applies on :root and under [data-ui-theme="shadcn"].
+ *
+ * Every colour is a light-dark() pair. `color-scheme` picks the side: the
+ * system by default; `.dark`, `.light` or `data-theme="dark|light"` on any
+ * ancestor forces one (see theme.css).
  */
 
 :root,
-[data-theme="shadcn"] {
-  --ui-background: oklch(1 0 0);
-  --ui-foreground: oklch(0.145 0 0);
-  --ui-heading: oklch(0.145 0 0);
-  --ui-card: oklch(1 0 0);
-  --ui-card-foreground: oklch(0.145 0 0);
-  --ui-popover: oklch(1 0 0);
-  --ui-popover-foreground: oklch(0.145 0 0);
-  --ui-primary: oklch(0.205 0 0);
-  --ui-primary-hover: oklch(0.205 0 0 / 90%);
-  --ui-primary-foreground: oklch(0.985 0 0);
-  --ui-secondary: oklch(0.97 0 0);
-  --ui-secondary-foreground: oklch(0.205 0 0);
+[data-ui-theme="shadcn"] {
+  --ui-background: light-dark(oklch(1 0 0), oklch(0.145 0 0));
+  --ui-foreground: light-dark(oklch(0.145 0 0), oklch(0.985 0 0));
+  --ui-heading: light-dark(oklch(0.145 0 0), oklch(0.985 0 0));
+  --ui-card: light-dark(oklch(1 0 0), oklch(0.205 0 0));
+  --ui-card-foreground: light-dark(oklch(0.145 0 0), oklch(0.985 0 0));
+  --ui-popover: light-dark(oklch(1 0 0), oklch(0.205 0 0));
+  --ui-popover-foreground: light-dark(oklch(0.145 0 0), oklch(0.985 0 0));
+  --ui-primary: light-dark(oklch(0.205 0 0), oklch(0.922 0 0));
+  --ui-primary-hover: light-dark(oklch(0.205 0 0 / 90%), oklch(0.922 0 0 / 90%));
+  --ui-primary-foreground: light-dark(oklch(0.985 0 0), oklch(0.205 0 0));
+  --ui-secondary: light-dark(oklch(0.97 0 0), oklch(0.269 0 0));
+  --ui-secondary-foreground: light-dark(oklch(0.205 0 0), oklch(0.985 0 0));
   --ui-secondary-border: transparent;
-  --ui-muted: oklch(0.97 0 0);
-  --ui-muted-foreground: oklch(0.556 0 0);
-  --ui-accent: oklch(0.97 0 0);
-  --ui-accent-foreground: oklch(0.205 0 0);
-  --ui-destructive: oklch(0.577 0.245 27.325);
+  --ui-muted: light-dark(oklch(0.97 0 0), oklch(0.269 0 0));
+  --ui-muted-foreground: light-dark(oklch(0.556 0 0), oklch(0.708 0 0));
+  --ui-accent: light-dark(oklch(0.97 0 0), oklch(0.269 0 0));
+  --ui-accent-foreground: light-dark(oklch(0.205 0 0), oklch(0.985 0 0));
+  --ui-destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
   --ui-destructive-foreground: oklch(0.985 0 0);
-  --ui-success: oklch(0.527 0.154 150.069);
-  --ui-success-muted: oklch(0.962 0.044 156.743);
-  --ui-link: oklch(0.205 0 0);
-  --ui-border: oklch(0.922 0 0);
-  --ui-input: oklch(0.922 0 0);
-  --ui-ring: oklch(0.708 0 0);
+  --ui-success: light-dark(oklch(0.527 0.154 150.069), oklch(0.723 0.219 149.579));
+  --ui-success-muted: light-dark(oklch(0.962 0.044 156.743), oklch(0.266 0.065 152.934));
+  --ui-warning: light-dark(oklch(0.555 0.163 48.998), oklch(0.828 0.189 84.429));
+  --ui-warning-muted: light-dark(oklch(0.962 0.059 95.617), oklch(0.279 0.077 45.635));
+  --ui-link: light-dark(oklch(0.205 0 0), oklch(0.985 0 0));
+  --ui-border: light-dark(oklch(0.922 0 0), oklch(1 0 0 / 10%));
+  --ui-input: light-dark(oklch(0.922 0 0), oklch(1 0 0 / 15%));
+  --ui-ring: light-dark(oklch(0.708 0 0), oklch(0.556 0 0));
   --ui-overlay: oklch(0 0 0 / 50%);
-  --ui-chart-1: oklch(0.646 0.222 41.116);
-  --ui-chart-2: oklch(0.6 0.118 184.704);
-  --ui-chart-3: oklch(0.398 0.07 227.392);
-  --ui-chart-4: oklch(0.828 0.189 84.429);
-  --ui-chart-5: oklch(0.769 0.188 70.08);
+  --ui-tooltip: var(--ui-primary);
+  --ui-tooltip-foreground: var(--ui-primary-foreground);
+  --ui-chart-1: light-dark(oklch(0.646 0.222 41.116), oklch(0.488 0.243 264.376));
+  --ui-chart-2: light-dark(oklch(0.6 0.118 184.704), oklch(0.696 0.17 162.48));
+  --ui-chart-3: light-dark(oklch(0.398 0.07 227.392), oklch(0.769 0.188 70.08));
+  --ui-chart-4: light-dark(oklch(0.828 0.189 84.429), oklch(0.627 0.265 303.9));
+  --ui-chart-5: light-dark(oklch(0.769 0.188 70.08), oklch(0.645 0.246 16.439));
 
   /* shadcn derives the scale from one --radius of 0.625rem. */
   --ui-radius-sm: calc(0.625rem - 4px);
@@ -61,36 +69,14 @@
   --ui-table-head-tracking: normal;
   --ui-table-head-color: var(--ui-heading);
   --ui-table-head-case: none;
-}
 
-.dark,
-[data-theme="shadcn"].dark {
-  --ui-background: oklch(0.145 0 0);
-  --ui-foreground: oklch(0.985 0 0);
-  --ui-heading: oklch(0.985 0 0);
-  --ui-card: oklch(0.205 0 0);
-  --ui-card-foreground: oklch(0.985 0 0);
-  --ui-popover: oklch(0.205 0 0);
-  --ui-popover-foreground: oklch(0.985 0 0);
-  --ui-primary: oklch(0.922 0 0);
-  --ui-primary-hover: oklch(0.922 0 0 / 90%);
-  --ui-primary-foreground: oklch(0.205 0 0);
-  --ui-secondary: oklch(0.269 0 0);
-  --ui-secondary-foreground: oklch(0.985 0 0);
-  --ui-muted: oklch(0.269 0 0);
-  --ui-muted-foreground: oklch(0.708 0 0);
-  --ui-accent: oklch(0.269 0 0);
-  --ui-accent-foreground: oklch(0.985 0 0);
-  --ui-destructive: oklch(0.704 0.191 22.216);
-  --ui-success: oklch(0.723 0.219 149.579);
-  --ui-success-muted: oklch(0.266 0.065 152.934);
-  --ui-link: oklch(0.985 0 0);
-  --ui-border: oklch(1 0 0 / 10%);
-  --ui-input: oklch(1 0 0 / 15%);
-  --ui-ring: oklch(0.556 0 0);
-  --ui-chart-1: oklch(0.488 0.243 264.376);
-  --ui-chart-2: oklch(0.696 0.17 162.48);
-  --ui-chart-3: oklch(0.769 0.188 70.08);
-  --ui-chart-4: oklch(0.627 0.265 303.9);
-  --ui-chart-5: oklch(0.645 0.246 16.439);
+  /* Tabs: a pill on a muted track. */
+  --ui-tabs-list: var(--ui-muted);
+  --ui-tabs-list-pad: 3px;
+  --ui-tabs-list-radius: var(--ui-radius-lg);
+  --ui-tabs-list-shadow: none;
+  --ui-tabs-trigger-radius: var(--ui-radius-md);
+  --ui-tabs-active: var(--ui-background);
+  --ui-tabs-active-text: var(--ui-heading);
+  --ui-tabs-active-shadow: var(--ui-shadow-control);
 }

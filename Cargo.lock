@@ -190,6 +190,7 @@ version = "0.1.0"
 dependencies = [
  "brocanth-assets",
  "brocanth-bundle",
+ "d3set-ssr",
  "rsx",
 ]
 
@@ -406,6 +407,15 @@ checksum = "d045de693cb712d0b22c6a64be5b953f67b3ce00ab5ad3dd5d8b441886ab8e1a"
 dependencies = [
  "quote",
  "syn 3.0.9",
+]
+
+[[package]]
+name = "d3set-ssr"
+version = "0.1.0"
+source = "git+https://github.com/DHHwasRight/d3set.git?branch=main#74bbe3003fdfe3c148c3d1a182bbd67516818d60"
+dependencies = [
+ "jt",
+ "rsx",
 ]
 
 [[package]]
@@ -1066,6 +1076,38 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "01ed659c5f428031b9c1fb7de6729af2eb491654d4bcd416a5b5b704986b9658"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "jt"
+version = "0.1.0"
+source = "git+https://github.com/DHHwasRight/jt.git?branch=main#f406170f53d0d07407416c25af8cfb7bed2c6892"
+dependencies = [
+ "itoa",
+ "jt-macros",
+ "zmij",
+]
+
+[[package]]
+name = "jt-core"
+version = "0.1.0"
+source = "git+https://github.com/DHHwasRight/jt.git?branch=main#f406170f53d0d07407416c25af8cfb7bed2c6892"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+ "zmij",
+]
+
+[[package]]
+name = "jt-macros"
+version = "0.1.0"
+source = "git+https://github.com/DHHwasRight/jt.git?branch=main#f406170f53d0d07407416c25af8cfb7bed2c6892"
+dependencies = [
+ "jt-core",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
 ]
 
 [[package]]

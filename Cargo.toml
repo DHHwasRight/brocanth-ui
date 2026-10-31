@@ -15,4 +15,6 @@ brocanth-ui = { path = "crates/brocanth-ui", version = "0.1.0" }
 # `brocanth-bundle` runs rolldown from build.rs.
 brocanth-assets = { git = "https://github.com/DHHwasRight/brocanth.git", branch = "main", version = "0.1.0" }
 brocanth-bundle = { git = "https://github.com/DHHwasRight/brocanth.git", branch = "main", version = "0.1.0" }
+# Server-rendered charts (feature `charts`). Same rsx source as ours.
+d3set-ssr = { git = "https://github.com/DHHwasRight/d3set.git", branch = "main", version = "0.1.0" }
 rsx = { git = "https://github.com/DHHwasRight/rsx.git", branch = "main", version = "0.1.0" }
