@@ -40,7 +40,7 @@ jobs:
       - name: Install the browser-test tools
         run: |
           npm ci
-          npx playwright-core install --with-deps chromium-headless-shell
+          npx playwright-core install --with-deps chromium-headless-shell webkit
 
       - name: Check the gallery in headless Chromium
         run: |

@@ -7,7 +7,7 @@
 // mise run browser-test   (exports and serves target/gallery on :4100)
 // Env: CHROME (headless shell path), GALLERY_URL, SHOTS (screenshot dir).
 
-import { chromium } from "playwright-core";
+import { chromium, webkit } from "playwright-core";
 
 import { existsSync } from "node:fs";
 
@@ -149,6 +149,23 @@ await check("accordion content grows to its height", async () => {
   const mid = (await $(item).boundingBox()).height;
   await settle(300);
   const open = (await $(item).boundingBox()).height;
+  return (closed < mid && mid < open) || { closed, mid, open };
+});
+
+await check("the accordion animates in WebKit (Safari's engine) too", async () => {
+  const engine = await webkit.launch();
+  const safari = await engine.newPage({ viewport: { width: 1280, height: 900 } });
+  await safari.goto(new URL("#accordion", url).href);
+  await safari.waitForTimeout(500);
+  const item = '#accordion [data-ui-theme="original"] details:nth-of-type(3)';
+  const height = () => safari.evaluate((s) => document.querySelector(s).getBoundingClientRect().height, item);
+  const closed = await height();
+  await safari.click(`${item} summary`);
+  await safari.waitForTimeout(80);
+  const mid = await height();
+  await safari.waitForTimeout(400);
+  const open = await height();
+  await engine.close();
   return (closed < mid && mid < open) || { closed, mid, open };
 });
 

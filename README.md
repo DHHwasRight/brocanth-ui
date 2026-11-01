@@ -33,7 +33,7 @@ JavaScript, dp-swap loads only the part of the page that changes.
 ```
 mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
 mise run gallery        # the three tabs, http://localhost:4100
-mise run browser-test   # 43 checks in headless Chromium
+mise run browser-test   # 44 checks in headless Chromium and WebKit
 ```
 
 See [docs/components.md](docs/components.md) for each component's JS cost,
@@ -70,7 +70,7 @@ examples/gallery/             the static site: Components and Utilities tabs, d3
   data/utilities.json         the utility pages and their class names (scripts/utility-index.mjs)
   src/reference.rs            reads each class's compiled CSS back from build.rs's reference.css
   src/views/u_*.rsx           one example per utility page, by category
-tests/browser.mjs             43 checks in headless Chromium
+tests/browser.mjs             44 checks in headless Chromium and WebKit
 docs/components.md            JS cost per component, Zag workarounds, known gaps
 ```
 
@@ -168,14 +168,14 @@ in `theme.css` carry them:
 | `ui-sheet` + `data-side` | Sheet, Drawer | slide from the edge, 500ms in, 300ms out |
 | `ui-pop` | Popover, Navigation menu, Date picker, Dropdown/Context menu, Menubar, Select, Combobox | fade + zoom from 95% + 0.5rem slide from the anchor side, 150ms |
 | `ui-float` | Tooltip, Hover card | fade + zoom, 150ms |
-| `ui-collapse` | Accordion, Collapsible | height grows to `auto`, 200ms |
+| `ui-collapse` | Accordion, Collapsible | height grows to the content, 200ms |
 
 Enter states come from `@starting-style`. Exit states stay on screen while
 they animate, because `display` and `overlay` transition with
 `allow-discrete`: this works for native overlays and for Zag content (its
-`hidden` attribute), so Zag needs no presence machine. Height to `auto`
-needs `interpolate-size` (Chromium); other engines open the accordion at
-once. `prefers-reduced-motion` turns every transition off.
+`hidden` attribute), so Zag needs no presence machine. The accordion
+animates a `grid-template-rows` change (0fr to 1fr) on `::details-content`,
+which works in Chromium, Safari and Firefox. `prefers-reduced-motion` turns every transition off.
 
 ## The glue pattern (TypeScript)
 

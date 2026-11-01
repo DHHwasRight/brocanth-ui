@@ -255,15 +255,19 @@
   }
 
   /* Accordion and collapsible: the content grows to its height, 200ms.
-     interpolate-size lets `auto` animate (Chromium); elsewhere it opens
-     at once. */
-  details.ui-collapse { interpolate-size: allow-keywords; }
+     The details box is a one-row grid whose row goes from 0fr to 1fr, and
+     grid rows animate in every engine (unlike height to `auto`). The
+     content is one wrapper element; it clips while the row is short.
+     content-visibility moves with allow-discrete, so the content stays on
+     screen while it closes. An engine without ::details-content opens the
+     item at once. */
   details.ui-collapse::details-content {
-    block-size: 0;
-    overflow-y: clip;
-    transition: block-size 200ms ease-out, content-visibility 200ms allow-discrete;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 200ms ease-out, content-visibility 200ms allow-discrete;
   }
-  details.ui-collapse[open]::details-content { block-size: auto; }
+  details.ui-collapse[open]::details-content { grid-template-rows: 1fr; }
+  details.ui-collapse > :not(summary) { min-height: 0; overflow: hidden; }
 
   @media (prefers-reduced-motion: reduce) {
     .ui-modal, .ui-modal::backdrop, .ui-sheet, .ui-sheet::backdrop, .ui-pop, .ui-float,
