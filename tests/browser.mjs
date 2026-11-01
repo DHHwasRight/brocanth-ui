@@ -298,6 +298,25 @@ await check("dark mode switches every token (light-dark)", async () => {
   return dark === "rgb(13, 30, 49)";
 });
 
+// ---- the gallery's view switch
+await check("one style hides the other pane and takes the whole width", async () => {
+  await page.evaluate(() => document.getElementById("button").scrollIntoView({ block: "start" }));
+  const pair = await $("#button .g-pair").boundingBox();
+  await page.locator('.g-view label:has(input[value="shadcn"])').click();
+  await settle();
+  const shadcn = await $('#button .g-pane[data-ui-theme="shadcn"]').boundingBox();
+  const stripeHidden = !(await $('#button .g-pane[data-ui-theme="stripe"]').isVisible());
+  await page.locator('.g-view label:has(input[value="stripe"])').click();
+  await settle();
+  const stripe = await $('#button .g-pane[data-ui-theme="stripe"]').boundingBox();
+  const shadcnHidden = !(await $('#button .g-pane[data-ui-theme="shadcn"]').isVisible());
+  await page.locator('.g-view label:has(input[value="both"])').click();
+  await settle();
+  const both = await page.locator("#button .g-pane").evaluateAll((panes) => panes.filter((p) => p.offsetParent).length);
+  const full = (box) => Math.abs(box.width - pair.width) < 2;
+  return (full(shadcn) && full(stripe) && stripeHidden && shadcnHidden && both === 2) || { pair, shadcn, stripe, both };
+});
+
 // ---- dp-swap: unmount before, mount after
 await check("a dp-swap unmounts and remounts the Zag kinds", async () => {
   await page.evaluate(() => {

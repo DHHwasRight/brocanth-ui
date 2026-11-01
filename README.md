@@ -20,7 +20,7 @@ checked by `.github/workflows/gallery.yml` on every push to `main`.
 ```
 mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
 mise run gallery        # every component, both themes, http://localhost:4100
-mise run browser-test   # 27 checks in headless Chromium
+mise run browser-test   # 28 checks in headless Chromium
 ```
 
 See [docs/components.md](docs/components.md) for each component's JS cost,
@@ -54,7 +54,7 @@ crates/brocanth-ui/
   public/brocanth-ui/chunks/  one chunk per kind + shared Zag chunks, committed
 examples/gallery/             every component under both themes, in the d3set gallery layout,
                               with its code (usage, component, glue) highlighted by giallo
-tests/browser.mjs             27 checks in headless Chromium
+tests/browser.mjs             28 checks in headless Chromium
 docs/components.md            JS cost per component, Zag workarounds, known gaps
 ```
 

@@ -18,7 +18,8 @@ pub fn Page(code: &HashMap<&str, Vec<Tab>>) -> Element {
         </head>
         <body class="g-body">
             <header class="g-top">
-                <a class="g-brand" href="#top"><span class="g-brand-mark"></span>brocanth-ui</a>
+                <a class="g-brand" href="#top"><span class="g-brand-mark"></span><span class="g-brand-name">brocanth-ui</span></a>
+                <ViewSwitch />
                 <nav class="g-top-nav" aria-label="Sections">
                     <a href="#top" class="is-current">Components</a>
                     <a href="#tokens">Themes</a>
@@ -118,6 +119,17 @@ fn dot_class(js: Js) -> &'static str {
     js.class()
 }
 
+/// Which styles the examples show. Radios and `:has()` in gallery.css do
+/// the work; THEME_SCRIPT only remembers the choice.
+fn ViewSwitch() -> Element {
+    <fieldset class="g-view">
+        <legend class="sr-only">Show</legend>
+        <label title="docs.stripe.com only"><input type="radio" name="view" value="stripe">Stripe</label>
+        <label title="shadcn/ui only"><input type="radio" name="view" value="shadcn">shadcn</label>
+        <label title="Both, side by side"><input type="radio" name="view" value="both" checked>Compare</label>
+    </fieldset>
+}
+
 fn ThemeSwitch() -> Element {
     <button type="button" class="g-theme-switch" id="theme-switch" aria-label="Dark mode">
         <svg class="moon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.6A5.6 5.6 0 0 1 6.4 2.5a5.6 5.6 0 1 0 7.1 7.1z" fill="currentColor"></path></svg>
@@ -136,5 +148,16 @@ const THEME_SCRIPT: &str = r##"(function () {
     var dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     root.dataset.theme = dark ? "light" : "dark";
     try { localStorage.setItem(key, root.dataset.theme); } catch (e) {}
+  });
+  // The view switch: remember the choice, restore it once the page is parsed.
+  var view = "brocanth-ui-view";
+  document.addEventListener("change", function (event) {
+    if (event.target.name === "view") try { localStorage.setItem(view, event.target.value); } catch (e) {}
+  });
+  document.addEventListener("DOMContentLoaded", function () {
+    try {
+      var input = document.querySelector('.g-view input[value="' + localStorage.getItem(view) + '"]');
+      if (input) input.checked = true;
+    } catch (e) {}
   });
 })();"##;
