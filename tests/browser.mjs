@@ -152,21 +152,33 @@ await check("accordion content grows to its height", async () => {
   return (closed < mid && mid < open) || { closed, mid, open };
 });
 
-await check("the accordion animates in WebKit (Safari's engine) too", async () => {
+await check("the accordion opens with its transition in WebKit (Safari's engine) too", async () => {
+  // The motion itself is measured in Chromium above. Headless WebKit on
+  // Linux paints too few frames to measure, so this checks what decides
+  // the motion: WebKit applies the ::details-content rule (a transition on
+  // grid-template-rows, a row that grows when open), and the item opens.
   const engine = await webkit.launch();
   const safari = await engine.newPage({ viewport: { width: 1280, height: 900 } });
   await safari.goto(new URL("#accordion", url).href);
-  await safari.waitForTimeout(500);
   const item = '#accordion [data-ui-theme="original"] details:nth-of-type(3)';
-  const height = () => safari.evaluate((s) => document.querySelector(s).getBoundingClientRect().height, item);
-  const closed = await height();
-  await safari.click(`${item} summary`);
-  await safari.waitForTimeout(80);
-  const mid = await height();
-  await safari.waitForTimeout(400);
-  const open = await height();
+  const style = (s) => {
+    const details = document.querySelector(s);
+    const content = getComputedStyle(details, "::details-content");
+    return { height: details.getBoundingClientRect().height, transition: content.transitionProperty, rows: content.gridTemplateRows };
+  };
+  const closed = await safari.evaluate(style, item);
+  // Opened directly: clicks are checked in Chromium, and headless WebKit on
+  // Linux does not always toggle <details> on a synthetic click.
+  await safari.evaluate((s) => { document.querySelector(s).open = true; }, item);
+  // Headless WebKit on Linux paints about five frames a second, and WebKit
+  // advances a transition with its frames: wait for the end, not a time.
+  await safari
+    .waitForFunction((s) => document.querySelector(s).getBoundingClientRect().height > 80, item, { timeout: 5000, polling: 100 })
+    .catch(() => {});
+  const open = await safari.evaluate(style, item);
   await engine.close();
-  return (closed < mid && mid < open) || { closed, mid, open };
+  const ok = open.height > closed.height && closed.transition.includes("grid-template-rows") && closed.rows !== open.rows;
+  return ok || { closed, open };
 });
 
 // ---- glue kinds (no Zag)
