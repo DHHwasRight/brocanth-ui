@@ -6,6 +6,9 @@
 //!   loaded, they fetch that page and swap in only this calendar
 //!   (`dp-select`); without it, they load the page. The app's handler reads
 //!   `month` and renders the calendar again.
+//! - On a static site, which cannot read a query, `nav_base` is a path with
+//!   `{month}` in it (`/calendar/start/{month}`): the link is that path with
+//!   the month in place, one prerendered page per month.
 //!
 //! The date picker adds one small glue file (date-picker.js, no Zag): it
 //! writes the chosen date into the trigger and closes the popover.
@@ -14,7 +17,7 @@ use crate::date::{Date, Month, WEEKDAYS};
 use crate::{class, ButtonSize, ButtonVariant};
 
 /// `month` is `YYYY-MM`; `selected` and `today` are `YYYY-MM-DD` or empty.
-/// `nav_base` ends in `?` or `&`.
+/// `nav_base` ends in `?` or `&`, or holds `{month}`.
 pub fn Calendar(id: &str, name: &str, month: &str, selected: &str, today: &str, nav_base: &str) -> Element {
     let shown = shown_month(month, selected, today);
     let selected = Date::parse(selected);
@@ -60,7 +63,11 @@ fn shown_month(month: &str, selected: &str, today: &str) -> Month {
 }
 
 fn nav_href(base: &str, month: Month) -> String {
-    format!("{base}month={month}")
+    if base.contains("{month}") {
+        base.replace("{month}", &month.to_string())
+    } else {
+        format!("{base}month={month}")
+    }
 }
 
 fn nav_class(side: &str) -> String {
@@ -92,4 +99,16 @@ pub fn DatePicker(id: &str, name: &str, month: &str, selected: &str, today: &str
 
 fn picker_label(selected: &str, placeholder: &str) -> String {
     Date::parse(selected).map_or_else(|| placeholder.to_string(), Date::human)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn nav_href_appends_a_query_or_fills_a_path() {
+        let may = Month { year: 2026, month: 5 };
+        assert_eq!(nav_href("/demo?", may), "/demo?month=2026-05");
+        assert_eq!(nav_href("/calendar/start/{month}", may), "/calendar/start/2026-05");
+    }
 }

@@ -65,6 +65,18 @@ pub fn input() -> &'static str {
     "flex h-control w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground shadow-control outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
 }
 
+/// A native `<select>`. It has no arrow of its own (`appearance-none`):
+/// `NativeSelect` draws a chevron over its right padding.
+pub fn select() -> &'static str {
+    "h-control w-full min-w-0 cursor-pointer appearance-none rounded-md border border-input bg-background py-1 pr-8 pl-3 text-sm text-foreground shadow-control outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive"
+}
+
+/// The look of a card: corners, border, surface and shadow, without its
+/// layout, for an element that has its own padding (a chart card).
+pub fn card_surface() -> &'static str {
+    "rounded-xl border bg-card text-card-foreground shadow-control"
+}
+
 /// An input inside an `InputGroup`: the group draws the border and the ring.
 pub fn input_bare() -> &'static str {
     "h-full w-full min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
@@ -74,7 +86,9 @@ pub fn badge(variant: BadgeVariant) -> String {
     let variant = match variant {
         BadgeVariant::Default => "border-transparent bg-primary text-primary-foreground",
         BadgeVariant::Secondary => "border-transparent bg-muted text-muted-foreground",
-        BadgeVariant::Success => "border-transparent bg-success-muted text-success",
+        BadgeVariant::Success => {
+            "border-transparent bg-badge-success text-badge-success-foreground"
+        }
         BadgeVariant::Destructive => {
             "border-transparent bg-destructive text-destructive-foreground"
         }

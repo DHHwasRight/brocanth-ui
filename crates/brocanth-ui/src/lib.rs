@@ -43,5 +43,5 @@ pub mod charts {
 /// Class lists, for markup that is not one of the components.
 /// Each returns the same classes the matching component uses.
 pub mod class {
-    pub use crate::variants::{badge, button, input, input_bare};
+    pub use crate::variants::{badge, button, card_surface, input, input_bare, select};
 }

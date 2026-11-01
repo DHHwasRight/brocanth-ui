@@ -1,7 +1,7 @@
 //! Card. No JavaScript.
 
 pub fn Card(children: Element) -> Element {
-    <div class="flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-control">
+    <div class={card_class()}>
         {children}
     </div>
 }
@@ -22,4 +22,8 @@ pub fn CardContent(children: Element) -> Element {
 
 pub fn CardFooter(children: Element) -> Element {
     <div class="flex items-center gap-2 px-6">{children}</div>
+}
+
+fn card_class() -> String {
+    format!("flex flex-col gap-6 py-6 {}", crate::class::card_surface())
 }

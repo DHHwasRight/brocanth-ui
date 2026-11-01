@@ -340,6 +340,30 @@ await check("the original menu keeps the original theme in the portal", async ()
   await page.keyboard.press("Escape");
   return ok;
 });
+await check("original status alerts: bright fill and dark text in light, the reverse in dark", async () => {
+  const colours = () =>
+    page.evaluate(() => {
+      const alert = document.querySelector('#alert [data-ui-theme="original"] .ui-alert-status');
+      const cs = getComputedStyle(alert);
+      return { bg: cs.backgroundColor, fg: cs.color };
+    });
+  const light = await colours();
+  await $("#theme-switch").click();
+  await settle();
+  const dark = await colours();
+  await $("#theme-switch").click();
+  await settle();
+  const ok = light.bg === "rgb(62, 207, 142)" && light.fg === "rgb(12, 43, 34)" && dark.bg === "rgb(12, 43, 34)" && dark.fg === "rgb(62, 207, 142)";
+  return ok || { light, dark };
+});
+await check("the original success badge: bright fill and dark text in light", async () => {
+  const badge = await page.evaluate(() => {
+    const el = [...document.querySelectorAll('#badge [data-ui-theme="original"] span')].find((s) => s.textContent === "Succeeded");
+    const cs = getComputedStyle(el);
+    return { bg: cs.backgroundColor, fg: cs.color };
+  });
+  return (badge.bg === "rgb(62, 207, 142)" && badge.fg === "rgb(12, 43, 34)") || badge;
+});
 await check("dark mode switches every token (light-dark)", async () => {
   await $("#theme-switch").click();
   await settle();

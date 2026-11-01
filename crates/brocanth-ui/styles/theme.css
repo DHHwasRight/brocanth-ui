@@ -34,6 +34,16 @@
   --color-destructive: var(--ui-destructive);
   --color-destructive-foreground: var(--ui-destructive-foreground);
   --color-destructive-muted: var(--ui-destructive-muted);
+  /* Status alerts: their own pair, so a theme can style them apart from
+     badges and field errors. */
+  --color-alert-success: var(--ui-alert-success);
+  --color-alert-success-foreground: var(--ui-alert-success-foreground);
+  --color-alert-warning: var(--ui-alert-warning);
+  --color-alert-warning-foreground: var(--ui-alert-warning-foreground);
+  --color-alert-destructive: var(--ui-alert-destructive);
+  --color-alert-destructive-foreground: var(--ui-alert-destructive-foreground);
+  --color-badge-success: var(--ui-badge-success);
+  --color-badge-success-foreground: var(--ui-badge-success-foreground);
   --color-success: var(--ui-success);
   --color-success-muted: var(--ui-success-muted);
   --color-warning: var(--ui-warning);

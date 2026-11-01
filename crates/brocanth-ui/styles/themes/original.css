@@ -36,6 +36,17 @@
   --ui-success-muted: #0c2b22;
   --ui-warning: #f5a623;
   --ui-warning-muted: #33240b;
+  /* Status alerts. Light: the status colour fills the panel and the text is
+     its dark chip colour (7.6, 7.4 and 5.7:1). Dark: the other way round. */
+  --ui-alert-success: light-dark(#3ecf8e, #0c2b22);
+  --ui-alert-success-foreground: light-dark(#0c2b22, #3ecf8e);
+  --ui-alert-warning: light-dark(#f5a623, #33240b);
+  --ui-alert-warning-foreground: light-dark(#33240b, #f5a623);
+  --ui-alert-destructive: light-dark(#ff5c7a, #3a0d17);
+  --ui-alert-destructive-foreground: light-dark(#3a0d17, #ff5c7a);
+  /* The success badge, like the alerts: bright fill and dark text in light. */
+  --ui-badge-success: light-dark(#3ecf8e, #0c2b22);
+  --ui-badge-success-foreground: light-dark(#0c2b22, #3ecf8e);
   --ui-link: light-dark(#625afa, #9d97ff);
   --ui-border: light-dark(#ebeef1, #23364d);
   --ui-input: light-dark(#d5dbe1, #2f4661);
