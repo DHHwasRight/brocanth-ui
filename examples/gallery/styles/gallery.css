@@ -146,8 +146,9 @@
 
   /* Code panel: d3set's details.code, with CSS-only tabs. */
   .g-src { margin-top: 12px; border: 1px solid var(--g-line); border-radius: var(--g-radius); overflow: hidden; }
-  .g-src > summary { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--g-ink); background: var(--g-stage); }
-  .g-src > summary::before { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; rotate: -45deg; transition: rotate 200ms; }
+  /* Baseline: "Code" and its file types sit on one line, whatever their size. */
+  .g-src > summary { display: flex; align-items: baseline; gap: 8px; cursor: pointer; padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--g-ink); background: var(--g-stage); }
+  .g-src > summary::before { content: ""; align-self: center; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; rotate: -45deg; transition: rotate 200ms; }
   .g-src[open] > summary::before { rotate: 45deg; }
   .g-src[open] > summary { border-bottom: 1px solid var(--g-line); }
   .g-src-langs { margin-left: 2px; font: 600 11px var(--g-mono); color: var(--g-muted); text-transform: uppercase; }
