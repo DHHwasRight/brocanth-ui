@@ -824,6 +824,7 @@ dependencies = [
  "brocanth-server",
  "brocanth-static",
  "brocanth-ui",
+ "d3set-ssr",
  "giallo",
  "rsx",
  "serde",

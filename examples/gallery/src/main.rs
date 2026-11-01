@@ -16,6 +16,7 @@ use brocanth_server::{Request, Response};
 use rsx::Template;
 
 mod catalog;
+mod charts_data;
 mod code;
 mod highlight;
 mod reference;
@@ -33,6 +34,7 @@ struct Site {
     components: HashMap<&'static str, Vec<code::Tab>>,
     guide: HashMap<&'static str, Vec<code::Tab>>,
     examples: HashMap<String, Vec<code::Tab>>,
+    charts: HashMap<&'static str, Vec<code::Tab>>,
 }
 
 impl Site {
@@ -45,10 +47,16 @@ impl Site {
         let page = match path {
             "" => self.components(),
             "/utilities" => self.guide(),
-            _ => match path.strip_prefix("/utilities/") {
-                Some(slug) => self.utility(slug),
-                None => None,
-            },
+            "/charts" => self.charts_overview(),
+            _ => {
+                if let Some(slug) = path.strip_prefix("/utilities/") {
+                    self.utility(slug)
+                } else if let Some(kind) = path.strip_prefix("/charts/") {
+                    self.chart(kind)
+                } else {
+                    None
+                }
+            }
         };
         let Some((html, tab, current)) = page else {
             return Response::html(404, NOT_FOUND);
@@ -110,11 +118,41 @@ impl Site {
         };
         Some((page.render_to_string().ok()?, "utilities", slug.to_string()))
     }
+
+    fn charts_overview(&self) -> Option<(String, &'static str, String)> {
+        let sections = charts_data::overview();
+        let page = views::charts::ChartsOverview {
+            base: &self.base,
+            css: &self.css,
+            sections: &sections,
+        };
+        Some((page.render_to_string().ok()?, "charts", "index".to_string()))
+    }
+
+    fn chart(&self, kind: &str) -> Option<(String, &'static str, String)> {
+        let entry = charts_data::entry(kind)?;
+        let group = charts_data::group_of(kind)?;
+        let all: Vec<&str> = charts_data::kinds().collect();
+        let i = all.iter().position(|k| *k == kind)?;
+        let previous = i.checked_sub(1).and_then(|p| charts_data::entry(all[p]));
+        let next = all.get(i + 1).and_then(|k| charts_data::entry(k));
+        let page = views::charts::ChartPage {
+            base: &self.base,
+            css: &self.css,
+            group: group.name,
+            entry: &entry,
+            code: self.charts.get(kind).map_or(&[], Vec::as_slice),
+            previous: previous.as_ref(),
+            next: next.as_ref(),
+        };
+        Some((page.render_to_string().ok()?, "charts", kind.to_string()))
+    }
 }
 
 /// The partial for a depth: the content of that layout layer, and what
 /// sits outside it but changes with the page, out of band: the current tab,
-/// and at depth 2 the sidebar's current page.
+/// and at depth 2 the sidebar of the page's section (Utilities or Charts),
+/// with its current page.
 ///
 /// A page without the requested layer answers with its deepest one: the
 /// client picks the depth from the page it leaves, so every depth must
@@ -137,9 +175,15 @@ fn partial(html: &str, depth: u32, tab: &str, current: &str) -> String {
         out.push_str(&nav);
     }
     if depth == 2 {
-        if let Ok(side) =
-            (views::reference::ReferenceSide { current, oob: true }).render_to_string()
-        {
+        // The sidebar of the page's section: the tab names the section.
+        let side = match tab {
+            "utilities" => {
+                (views::reference::ReferenceSide { current, oob: true }).render_to_string()
+            }
+            "charts" => (views::charts::ChartsSide { current, oob: true }).render_to_string(),
+            _ => Ok(String::new()),
+        };
+        if let Ok(side) = side {
             out.push_str(&side);
         }
     }
@@ -170,6 +214,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         components: code::all(),
         guide: code::guide(),
         examples: code::utilities(),
+        charts: code::charts(),
     };
 
     let mut paths = vec!["/".to_string(), "/utilities".to_string()];
@@ -178,6 +223,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .iter()
             .flat_map(|c| c.pages.iter().map(|p| format!("/utilities/{}", p.slug))),
     );
+    paths.push("/charts".to_string());
+    paths.extend(charts_data::kinds().map(|kind| format!("/charts/{kind}")));
 
     let mut assets: Vec<(&'static str, &'static [u8])> = brocanth_ui::assets::ASSETS
         .iter()
@@ -216,6 +263,7 @@ mod tests {
             components: code::all(),
             guide: code::guide(),
             examples: code::utilities(),
+            charts: code::charts(),
         }
     }
 
@@ -254,8 +302,23 @@ mod tests {
     }
 
     #[test]
+    fn a_chart_partial_carries_the_charts_sidebar_out_of_band() {
+        let request = Request::new(brocanth::routing::Verb::Get, "/charts/heatmap")
+            .with_header("DP-Partial", "2");
+        let html = body(site().handle(&request));
+        assert!(!html.contains("<html"), "a partial is not a document");
+        assert!(html.contains("var(--d3s-series-0)") || html.contains("var(--d3s-seq-"));
+        assert!(html.contains(r#"id="charts-side" aria-label="Charts" dp-swap-oob="outerHTML""#));
+        assert!(html.contains(r#"<a class="g-side-link is-current" href="/charts/heatmap/">"#));
+        assert!(!html.contains(r#"id="utilities-side""#));
+    }
+
+    #[test]
     fn an_unknown_path_is_a_404() {
-        let request = Request::new(brocanth::routing::Verb::Get, "/nope");
-        assert_eq!(site().handle(&request).status, 404);
+        let site = site();
+        for path in ["/nope", "/charts/sparkle", "/utilities/nope"] {
+            let request = Request::new(brocanth::routing::Verb::Get, path);
+            assert_eq!(site.handle(&request).status, 404, "{path}");
+        }
     }
 }

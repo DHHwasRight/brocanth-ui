@@ -1,11 +1,11 @@
-//! The page shell every gallery page shares: head, top bar with the two
+//! The page shell every gallery page shares: head, top bar with the three
 //! tabs, and the theme switch.
 //!
 //! Links are root-relative; brocanth-static adds the base path on export.
 //! `dp-boost` on <body> turns them into partial navigations into `#shell`,
 //! layer 1 (dp-swap finds layer 2 itself, from the markers). Layer 1 of the
 //! layout is everything under the top bar (`dp-layout="/"`). The Utilities
-//! pages add layer 2, their content next to the sidebar. The comments
+//! and Charts pages add layer 2, their content next to the sidebar. The comments
 //! LAYER_1 and LAYER_2 mark the layers, so the handler can answer
 //! `DP-Partial: <depth>` with that layer alone (see main.rs).
 
@@ -42,12 +42,13 @@ pub fn Shell(title: &str, base: &str, css: &str, tab: &str, children: Element) -
     </html>
 }
 
-/// The two tabs. A partial carries them out of band (`oob`), so the current
+/// The tabs. A partial carries them out of band (`oob`), so the current
 /// tab follows a partial navigation.
 pub fn TopNav(tab: &str, oob: bool) -> Element {
     <nav class="g-top-nav" id="top-nav" aria-label="Sections" { ...[("dp-swap-oob", oob.then_some("outerHTML"))] }>
         <a href="/" class={current(tab, "components")}>Components</a>
         <a href="/utilities/" class={current(tab, "utilities")}>Utilities</a>
+        <a href="/charts/" class={current(tab, "charts")}>Charts</a>
     </nav>
 }
 

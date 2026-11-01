@@ -186,4 +186,83 @@
     .g-view { right: 16px; top: calc(64px + 12px + env(safe-area-inset-top, 0px)); }
     .g-top-nav { display: none; }
   }
+
+  /*
+   * Charts tab: the d3set chart gallery, server-rendered by d3set-ssr.
+   * theme.css maps the main --d3s-* variables to the theme; d3set's charts
+   * also read two more series, the sequential pair (heatmaps) and two sizes.
+   * The rules after them are the HTML charts' rules from d3set's style.css
+   * (table, KPI, top list, change, host map, status, event stream, note,
+   * SLO), unchanged but for the selectors theme.css already has.
+   */
+  :root, [data-ui-theme] {
+    --d3s-series-5: color-mix(in oklab, var(--ui-chart-1) 55%, var(--ui-chart-5));
+    --d3s-series-6: var(--ui-muted-foreground);
+    --d3s-seq-0: color-mix(in oklab, var(--ui-chart-1) 10%, var(--ui-card));
+    --d3s-seq-1: var(--ui-chart-1);
+    --d3s-space-md: 16px;
+    --d3s-font-title: 14px;
+  }
+  .d3s-chart [hidden], .d3s-legend[hidden] { display: none !important; }
+  .d3s-chart text.d3s-label-muted { fill: var(--d3s-text-muted); font-size: var(--d3s-font-axis); }
+  .d3s-table-wrap { height: 100%; overflow: auto; }
+  .d3s-table { width: 100%; border-collapse: collapse; font-size: var(--d3s-font-label); font-variant-numeric: tabular-nums; }
+  .d3s-table th { position: sticky; top: 0; padding: 6px 8px; text-align: left; font-weight: 600; white-space: nowrap; color: var(--d3s-text-muted); background: var(--d3s-surface); border-bottom: 1px solid var(--d3s-axis); }
+  .d3s-table th[aria-sort="ascending"]::after { content: " ▲"; }
+  .d3s-table th[aria-sort="descending"]::after { content: " ▼"; }
+  .d3s-table td { padding: 6px 8px; border-bottom: 1px solid var(--d3s-grid); }
+  .d3s-kpi-value { font-size: 2.5em; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--d3s-text); }
+  .d3s-kpi-delta { min-height: 1.2em; font-size: var(--d3s-font-label); color: var(--d3s-text-muted); }
+  .d3s-kpi-delta[data-trend="up"] { color: var(--d3s-positive); }
+  .d3s-kpi-delta[data-trend="down"] { color: var(--d3s-negative); }
+  .d3s-kpi-trend { width: 100%; height: 100%; min-height: 0; }
+  .d3s-scroll { height: 100%; overflow: auto; font-size: var(--d3s-font-label); font-variant-numeric: tabular-nums; }
+  .d3s-toplist { display: grid; gap: 4px; align-content: start; grid-auto-rows: max-content; }
+  .d3s-toplist-row { position: relative; display: grid; grid-template-columns: 2em 1fr auto; gap: 8px; padding: 4px 8px; border-radius: var(--d3s-radius); overflow: hidden; }
+  .d3s-toplist-row > span { position: relative; z-index: 1; }
+  .d3s-toplist-rank { color: var(--d3s-text-muted); }
+  .d3s-toplist-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .d3s-toplist-value { font-weight: 600; }
+  .d3s-toplist-bar { position: absolute; inset: 0 auto 0 0; opacity: 0.18; border-radius: var(--d3s-radius); }
+  .d3s-change { display: grid; align-content: start; }
+  .d3s-change-head, .d3s-change-row { display: grid; grid-template-columns: 1fr auto 11em; gap: 12px; padding: 6px 4px; border-bottom: 1px solid var(--d3s-grid); }
+  .d3s-change-head { font-weight: 600; color: var(--d3s-text-muted); }
+  .d3s-change-head > :not(:first-child), .d3s-change-row > :not(:first-child) { text-align: right; }
+  .d3s-change-now { font-weight: 600; }
+  .d3s-hostmap { display: flex; flex-wrap: wrap; align-content: start; gap: var(--d3s-space-md); }
+  .d3s-hostmap-title { margin-bottom: 4px; color: var(--d3s-text-muted); }
+  .d3s-hostmap-tiles { display: flex; flex-wrap: wrap; gap: 3px; max-width: 360px; }
+  .d3s-hex { width: 26px; height: 30px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+  .d3s-status-grid { display: grid; gap: var(--d3s-space-sm); align-content: start; }
+  .d3s-status-summary { display: flex; gap: var(--d3s-space-md); color: var(--d3s-text-muted); }
+  .d3s-status-summary span::before { content: "● "; color: var(--dot); }
+  .d3s-status-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; }
+  .d3s-status-tile { display: grid; gap: 2px; padding: 6px 8px; border-radius: var(--d3s-radius); background: var(--d3s-bg); border-left: 4px solid var(--level); }
+  .d3s-status-tile strong { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .d3s-status-tile span { font-weight: 600; color: var(--level); }
+  .d3s-status-tile small { color: var(--d3s-text-muted); }
+  .d3s-stream { display: grid; align-content: start; font-family: var(--g-mono); }
+  .d3s-stream-line { display: flex; align-items: baseline; gap: 8px; padding: 3px 6px; white-space: nowrap; border-left: 3px solid var(--level); border-bottom: 1px solid var(--d3s-grid); }
+  .d3s-stream-line time { color: var(--d3s-text-muted); }
+  .d3s-stream-level { min-width: 5ch; font-weight: 600; text-transform: uppercase; color: var(--level); }
+  .d3s-stream-msg { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  .d3s-stream-tag { color: var(--d3s-text-muted); }
+  .d3s-note p { margin: 0 0 var(--d3s-space-sm); line-height: 22px; color: var(--d3s-text-muted); }
+  .d3s-slo { display: grid; gap: 4px; align-content: start; }
+  .d3s-slo-meta { font-size: var(--d3s-font-label); color: var(--d3s-text-muted); }
+  .d3s-slo-budget { height: 6px; border-radius: 3px; background: var(--d3s-grid); overflow: hidden; }
+  .d3s-slo-budget-fill { height: 100%; }
+  .d3s-swatch { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border-radius: 50%; vertical-align: -1px; }
+
+  /* Chart pages: one card per example. */
+  .g-chart-list { display: grid; gap: 16px; }
+  /* Overview: d3set's thumbnail grid. A thumbnail is a picture of the
+     chart: the legend and pointer events stay off. */
+  .g-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }
+  .g-thumb { display: grid; grid-template-rows: auto 1fr; overflow: hidden; color: var(--g-text); background: var(--ui-card); border: 1px solid var(--g-line); border-radius: var(--g-radius); box-shadow: 0 1px 2px var(--g-shadow); transition: border-color 150ms, box-shadow 150ms; }
+  .g-thumb:hover { border-color: var(--g-accent); box-shadow: 0 4px 16px var(--g-shadow); }
+  .g-thumb-chart { height: 174px; padding: 12px 16px; overflow: hidden; pointer-events: none; border-bottom: 1px solid var(--g-line); }
+  .g-thumb-chart .d3s-legend { display: none; }
+  .g-thumb-text { display: grid; align-content: start; gap: 2px; padding: 12px 16px; font-size: 13px; line-height: 20px; }
+  .g-thumb-text strong { font-size: 14px; font-weight: 600; color: var(--g-ink); }
 }

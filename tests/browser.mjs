@@ -456,6 +456,62 @@ await check("without JavaScript, every link is a full page", async () => {
   return (h1 === "gap" && tab === "Utilities") || { h1, tab };
 });
 
+// ---- the Charts tab: d3set-ssr charts, server-rendered SVG
+await check("the Charts tab opens the overview", async () => {
+  await page.goto(base.href);
+  await page.locator('.g-top-nav a:has-text("Charts")').click();
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent === "Charts rendered on the server").catch(() => {});
+  const state = await page.evaluate(() => ({
+    h1: document.querySelector("h1")?.textContent,
+    tab: document.querySelector(".g-top-nav .is-current")?.textContent,
+    thumbs: document.querySelectorAll(".g-thumb").length,
+    svgs: document.querySelectorAll(".g-thumb svg").length,
+  }));
+  return (state.h1 === "Charts rendered on the server" && state.tab === "Charts" && state.thumbs === 24 && state.svgs > 10) || state;
+});
+await check("a chart page draws SVG marks in the theme's series colour", async () => {
+  await page.goto(new URL("charts/bar/", base).href);
+  return page.evaluate(() => {
+    const marks = [...document.querySelectorAll(".g-pane .d3s-chart svg [style], .g-pane .d3s-chart svg [fill]")].filter((el) => `${el.getAttribute("style")} ${el.getAttribute("fill")}`.includes("var(--d3s-series-0)"));
+    const painted = marks.length ? getComputedStyle(marks[0]).fill : "";
+    const code = document.querySelector(".g-src-panel")?.textContent ?? "";
+    // The variable resolves to a colour of the original theme, not to nothing.
+    return (marks.length > 0 && painted.startsWith("rgb") && code.includes("pub fn bar()")) || { marks: marks.length, painted, code: code.slice(0, 60) };
+  });
+});
+await check("a Charts sidebar link is a partial navigation and the sidebar follows", async () => {
+  await page.goto(new URL("charts/", base).href);
+  await page.waitForFunction(() => window.dpswap);
+  await page.evaluate(() => { window.sameDocument = true; });
+  const requests = [];
+  const listen = (r) => requests.push(new URL(r.url()).pathname);
+  page.on("request", listen);
+  await page.locator('#charts-side .g-side-link:text-is("Heatmap")').click();
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent === "Heatmap");
+  page.off("request", listen);
+  const state = await page.evaluate(() => ({
+    same: window.sameDocument === true,
+    title: document.title,
+    side: document.querySelector("#charts-side .g-side-link.is-current")?.textContent,
+    tab: document.querySelector(".g-top-nav .is-current")?.textContent,
+  }));
+  const partial = requests.some((p) => p.includes("/partials/2/charts/heatmap"));
+  return (state.same && state.title.startsWith("Heatmap") && state.side === "Heatmap" && state.tab === "Charts" && partial) || { state, requests };
+});
+await check("every Charts sidebar link loads with no error", async () => {
+  await page.goto(new URL("charts/", base).href);
+  const links = await page.locator("#charts-side .g-side-link").evaluateAll((as) => as.map((a) => a.href));
+  const before = errors.length;
+  const broken = [];
+  for (const link of links) {
+    const response = await page.goto(link, { waitUntil: "load" });
+    const charts = await page.locator(".g-pane .d3s-chart, .g-pane .d3s-note, .g-thumb").count();
+    const failed = await page.locator('[role="alert"]').count();
+    if (!response.ok() || charts === 0 || failed > 0) broken.push(link);
+  }
+  return (links.length === 25 && broken.length === 0 && errors.length === before) || { pages: links.length, broken, errors: errors.slice(before) };
+});
+
 await page.screenshot({ path: `${shots}/gallery-top.png` }).catch(() => {});
 await browser.close().catch(() => {});
 

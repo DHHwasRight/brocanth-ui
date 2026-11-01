@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use crate::catalog::{Entry, Js, GROUPS};
+use crate::charts_data::kinds;
 use crate::highlight;
 use crate::reference::CATEGORIES;
 
@@ -164,6 +165,52 @@ pub fn guide() -> HashMap<&'static str, Vec<Tab>> {
             ],
         ),
     ])
+}
+
+/// The Code panel of each chart page, by kind: the function that builds
+/// the kind's examples, the rsx that renders them with brocanth-ui's Chart,
+/// and the d3set-ssr template that draws the chart.
+pub fn charts() -> HashMap<&'static str, Vec<Tab>> {
+    let data = "examples/gallery/src/charts_data.rs";
+    let view = "examples/gallery/src/views/charts.rsx";
+    let (data_text, view_text) = (read(data), read(view));
+    let page = extract_fn(&view_text, "ChartExamples")
+        .unwrap_or_else(|| panic!("gallery: no ChartExamples in {view}"));
+    kinds()
+        .map(|kind| {
+            let spec = extract_fn(&data_text, kind)
+                .unwrap_or_else(|| panic!("gallery: no fn {kind} in {data}"));
+            let mut tabs = vec![
+                Tab {
+                    label: "Spec",
+                    path: data.to_string(),
+                    html: highlight::html(&spec, "rust"),
+                },
+                Tab {
+                    label: "Page",
+                    path: view.to_string(),
+                    html: highlight::html(&page, "rsx"),
+                },
+            ];
+            if let Some(template) = d3set_ssr::sources::view(kind) {
+                tabs.push(Tab {
+                    label: "Template",
+                    path: format!("d3set-ssr/src/views/{}.rsx", template_file(kind)),
+                    html: highlight::html(template, "rsx"),
+                });
+            }
+            (kind, tabs)
+        })
+        .collect()
+}
+
+/// The d3set-ssr template file of a kind (`d3set_ssr::sources::view`).
+fn template_file(kind: &str) -> &str {
+    match kind {
+        "line" | "area" | "timeseries" => "xy",
+        "donut" => "pie",
+        other => other,
+    }
 }
 
 fn repo() -> PathBuf {

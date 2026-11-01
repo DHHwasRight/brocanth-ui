@@ -10,6 +10,9 @@ description = "Renders every component twice, under the shadcn theme and the ori
 [dependencies]
 brocanth-ui = { workspace = true, features = ["charts"] }
 rsx.workspace = true
+# The Charts tab: thumbnails (`render`), the sample data's dates (`time`),
+# and each chart's server template (`sources`).
+d3set-ssr.workspace = true
 # Code highlighting with TextMate grammars and VS Code themes, as in the d3set gallery.
 giallo = { version = "0.5", features = ["dump"] }
 # The export: brocanth-static writes every page as a document and as one
