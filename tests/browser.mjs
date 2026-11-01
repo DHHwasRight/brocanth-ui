@@ -2,7 +2,7 @@
 // has behaviour: the native overlays (0 JS), the glue kinds, the Zag kinds,
 // and unmount/remount around a dp-swap. Both theme panes render the same
 // markup, so the checks run in the shadcn pane and one theme check runs in
-// the Stripe pane.
+// the original pane.
 //
 // mise run browser-test   (exports and serves target/gallery on :4100)
 // Env: CHROME (headless shell path), GALLERY_URL, SHOTS (screenshot dir).
@@ -133,7 +133,7 @@ await check("dialog fades and zooms in, and out", async () => {
 });
 await check("accordion content grows to its height", async () => {
   await page.evaluate(() => document.getElementById("accordion").scrollIntoView({ block: "center" }));
-  const item = '#accordion [data-ui-theme="stripe"] details:nth-of-type(3)';
+  const item = '#accordion [data-ui-theme="original"] details:nth-of-type(3)';
   const closed = (await $(item).boundingBox()).height;
   await $(`${item} summary`).click();
   await settle(80);
@@ -258,7 +258,7 @@ await check("toast: a button raises a toast in its own toaster", async () => {
   await settle(600);
   return page.evaluate(() => {
     const mine = document.querySelectorAll('#shadcn-toaster [data-part="root"]').length;
-    const other = document.querySelectorAll('#stripe-toaster [data-part="root"]').length;
+    const other = document.querySelectorAll('#original-toaster [data-part="root"]').length;
     const title = document.querySelector('#shadcn-toaster [data-part="title"]')?.textContent;
     return mine === 1 && other === 0 && title === "Payment captured";
   });
@@ -277,14 +277,14 @@ await check("resizable: arrow key on the handle resizes", async () => {
 await check("the two panes paint different primary colours", () =>
   page.evaluate(() => {
     const color = (theme) => getComputedStyle(document.querySelector(`#button [data-ui-theme="${theme}"] button`)).backgroundColor;
-    return color("shadcn") !== color("stripe") && color("stripe") === "rgb(98, 90, 250)";
+    return color("shadcn") !== color("original") && color("original") === "rgb(98, 90, 250)";
   }),
 );
-await check("the Stripe menu keeps the Stripe theme in the portal", async () => {
-  await $('#stripe-menu [data-part="trigger"]').click();
+await check("the original menu keeps the original theme in the portal", async () => {
+  await $('#original-menu [data-part="trigger"]').click();
   await settle();
   const ok = await page.evaluate(() => {
-    const content = [...document.querySelectorAll('#ui-portal [data-ui-theme="stripe"] [data-part="content"]')].find((el) => !el.hidden);
+    const content = [...document.querySelectorAll('#ui-portal [data-ui-theme="original"] [data-part="content"]')].find((el) => !el.hidden);
     return !!content && getComputedStyle(content).borderTopLeftRadius === "6px";
   });
   await page.keyboard.press("Escape");
@@ -293,7 +293,7 @@ await check("the Stripe menu keeps the Stripe theme in the portal", async () => 
 await check("dark mode switches every token (light-dark)", async () => {
   await $("#theme-switch").click();
   await settle();
-  const dark = await page.evaluate(() => getComputedStyle(document.querySelector('#card [data-ui-theme="stripe"] .g-pane-body > div > div')).backgroundColor);
+  const dark = await page.evaluate(() => getComputedStyle(document.querySelector('#card [data-ui-theme="original"] .g-pane-body > div > div')).backgroundColor);
   await $("#theme-switch").click();
   return dark === "rgb(13, 30, 49)";
 });
@@ -305,16 +305,16 @@ await check("one style hides the other pane and takes the whole width", async ()
   await page.locator('.g-view label:has(input[value="shadcn"])').click();
   await settle();
   const shadcn = await $('#button .g-pane[data-ui-theme="shadcn"]').boundingBox();
-  const stripeHidden = !(await $('#button .g-pane[data-ui-theme="stripe"]').isVisible());
-  await page.locator('.g-view label:has(input[value="stripe"])').click();
+  const originalHidden = !(await $('#button .g-pane[data-ui-theme="original"]').isVisible());
+  await page.locator('.g-view label:has(input[value="original"])').click();
   await settle();
-  const stripe = await $('#button .g-pane[data-ui-theme="stripe"]').boundingBox();
+  const original = await $('#button .g-pane[data-ui-theme="original"]').boundingBox();
   const shadcnHidden = !(await $('#button .g-pane[data-ui-theme="shadcn"]').isVisible());
   await page.locator('.g-view label:has(input[value="both"])').click();
   await settle();
   const both = await page.locator("#button .g-pane").evaluateAll((panes) => panes.filter((p) => p.offsetParent).length);
   const full = (box) => Math.abs(box.width - pair.width) < 2;
-  return (full(shadcn) && full(stripe) && stripeHidden && shadcnHidden && both === 2) || { pair, shadcn, stripe, both };
+  return (full(shadcn) && full(original) && originalHidden && shadcnHidden && both === 2) || { pair, shadcn, original, both };
 });
 
 // ---- dp-swap: unmount before, mount after

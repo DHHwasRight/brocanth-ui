@@ -46,9 +46,9 @@ pub fn TabsDemo(p: &str) -> Element {
             <TabsTrigger value="ruby" selected={false}>Ruby</TabsTrigger>
             <TabsTrigger value="node" selected={false}>Node.js</TabsTrigger>
         </TabsList>
-        <TabsContent value="curl" selected={true}><Code text="curl https://api.stripe.com/v1/charges -u sk_test_…" /></TabsContent>
-        <TabsContent value="ruby" selected={false}><Code text="Stripe::Charge.list(limit: 3)" /></TabsContent>
-        <TabsContent value="node" selected={false}><Code text="await stripe.charges.list({ limit: 3 });" /></TabsContent>
+        <TabsContent value="curl" selected={true}><Code text="curl https://api.example.com/v1/charges -u sk_test_…" /></TabsContent>
+        <TabsContent value="ruby" selected={false}><Code text="Client::Charge.list(limit: 3)" /></TabsContent>
+        <TabsContent value="node" selected={false}><Code text="await client.charges.list({ limit: 3 });" /></TabsContent>
     </Tabs>
 }
 

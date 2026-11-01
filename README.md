@@ -1,7 +1,7 @@
 # brocanth-ui
 
 Every shadcn/ui component for brocanth apps, with as little JavaScript as
-possible. Two themes ship: **shadcn/ui** (default) and **docs.stripe.com**.
+possible. Two themes ship: **shadcn/ui** (default) and **original**.
 The markup is the same for both; only CSS variables differ.
 
 - **Markup:** rsx components, rendered on the server. There is no client VDOM.
@@ -38,7 +38,7 @@ crates/brocanth-ui/
     ui.css                    Tailwind entry for the shipped stylesheet
     theme.css                 @theme: utility names -> --ui-* variables; native overlay and chart rules
     themes/shadcn.css         --ui-* values, light-dark() pairs
-    themes/stripe.css         --ui-* values: Sail tokens (light), d3set gallery navy (dark)
+    themes/original.css       --ui-* values: purple brand, cool greys (light), d3set gallery navy (dark)
   src/
     components/*.rsx          56 components, one file per shadcn component (or family)
     charts/chart.rsx          Chart (feature `charts`, d3set-ssr)
@@ -106,7 +106,7 @@ docs/components.md            JS cost per component, Zag workarounds, known gaps
    block. Ids that name an anchor (popover, tooltip, hover card, menus)
    must be CSS identifiers: letters, digits, `-`, `_`.
 
-5. Pick the theme with `data-ui-theme="stripe"` on `<html>` or any subtree.
+5. Pick the theme with `data-ui-theme="original"` on `<html>` or any subtree.
    Dark mode follows the system; `class="dark"` or `data-theme="dark"` on
    any ancestor forces it.
 
@@ -124,7 +124,7 @@ utility to a `--ui-*` variable; a theme file sets the variables; components
 never name a colour, radius or size. Every colour is a `light-dark()` pair,
 so one theme file covers light and dark.
 
-| Token | shadcn | docs.stripe.com |
+| Token | shadcn | original |
 |---|---|---|
 | `--ui-primary` | near black / near white | `#625afa` / `#9d97ff` |
 | `--ui-background` (dark) | `oklch(0.145 0 0)` | `#0a1929` (d3set navy) |
@@ -136,7 +136,7 @@ so one theme file covers light and dark.
 | `--ui-tabs-*` | a pill on a muted track | an underline on a divider |
 | `--ui-table-head-*` | 14px, sentence case | 12px, uppercase, tracked, muted |
 | `--ui-tooltip` | the primary colour | near black, in both schemes |
-| `--ui-chart-1..5` | shadcn's chart palette | Stripe purple, blue, lavender, orange, green |
+| `--ui-chart-1..5` | shadcn's chart palette | purple, blue, lavender, orange, green |
 
 Charts follow the theme too: `theme.css` maps d3set's `--d3s-series-N` to
 `--ui-chart-N`.

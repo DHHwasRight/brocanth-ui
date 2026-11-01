@@ -6,7 +6,7 @@
 @import "tailwindcss" source(none);
 @import "./theme.css";
 @import "./themes/shadcn.css";
-@import "./themes/stripe.css";
+@import "./themes/original.css";
 
 @source "../src";
 @source "../assets/brocanth-ui/_glue";

@@ -1,21 +1,14 @@
 /*
- * docs.stripe.com look, under [data-ui-theme="stripe"].
+ * The original theme, under [data-ui-theme="original"].
  *
- * Light values: the Sail tokens that the docs page ships as CSS variables
- * (read 2026-10-31):
- *   gray:   50 #f6f8fa  100 #ebeef1  150 #d5dbe1  500 #687385
- *           700 #414552 (body text)  900 #1a1b25 (headings)
- *   purple: 400 #8d7ffa  500 #625afa (brand)  600 #513dd9
- *   red 500 #df1b41, green 500 #228403, orange 500 #c84801, blue 500 #0570de
- *   radius: small 4px, medium 8px, large 10px
- * Dark values: the d3set gallery's navy palette
- * (d3set/rust/gallery/assets/css/_gallery.css), after Stripe's dark surfaces.
- *
- * The docs use the licensed "Sohne" face. This theme uses the system stack
- * that the docs fall back to. Set --ui-font-sans if you hold a licence.
+ * Light: a purple brand (#625afa), cool greys (#f6f8fa to #1a1b25) with
+ * #414552 body text, tight 4/6/8/10px radii, 32px controls, semibold
+ * controls and a two-layer shadow.
+ * Dark: the d3set gallery's navy palette
+ * (d3set/rust/gallery/assets/css/_gallery.css).
  */
 
-[data-ui-theme="stripe"] {
+[data-ui-theme="original"] {
   --ui-background: light-dark(#ffffff, #0a1929);
   --ui-foreground: light-dark(#414552, #adbdcc);
   --ui-heading: light-dark(#1a1b25, #f6f9fc);
@@ -44,7 +37,7 @@
   --ui-input: light-dark(#d5dbe1, #2f4661);
   --ui-ring: light-dark(#8d7ffa, #9d97ff);
   --ui-overlay: light-dark(rgb(26 27 37 / 0.4), rgb(0 0 0 / 0.6));
-  /* Stripe docs tooltips are dark in both schemes. */
+  /* Tooltips are dark in both schemes. */
   --ui-tooltip: light-dark(#1a1b25, #f6f9fc);
   --ui-tooltip-foreground: light-dark(#ffffff, #0a1929);
   --ui-chart-1: light-dark(#625afa, #9d97ff);
@@ -64,7 +57,7 @@
   --ui-weight-control: 600;
   --ui-weight-heading: 700;
 
-  /* Stripe's two-layer control shadow, and its wide, soft overlay shadow. */
+  /* A two-layer control shadow, and a wide, soft overlay shadow. */
   --ui-shadow-control: 0 1px 1px 0 rgb(0 0 0 / 0.12), 0 2px 5px 0 rgb(60 66 87 / 0.08);
   --ui-shadow-overlay: 0 15px 35px 0 rgb(60 66 87 / 0.12), 0 5px 15px 0 rgb(0 0 0 / 0.12);
 
@@ -78,7 +71,7 @@
   --ui-table-head-color: var(--ui-muted-foreground);
   --ui-table-head-case: uppercase;
 
-  /* Tabs: an underline on a divider, as on docs.stripe.com. */
+  /* Tabs: an underline on a divider. */
   --ui-tabs-list: transparent;
   --ui-tabs-list-pad: 0px;
   --ui-tabs-list-radius: 0px;

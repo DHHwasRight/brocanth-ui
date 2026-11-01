@@ -19,7 +19,6 @@ pub fn Page(code: &HashMap<&str, Vec<Tab>>) -> Element {
         <body class="g-body">
             <header class="g-top">
                 <a class="g-brand" href="#top"><span class="g-brand-mark"></span><span class="g-brand-name">brocanth-ui</span></a>
-                <ViewSwitch />
                 <nav class="g-top-nav" aria-label="Sections">
                     <a href="#top" class="is-current">Components</a>
                     <a href="#tokens">Themes</a>
@@ -38,12 +37,13 @@ pub fn Page(code: &HashMap<&str, Vec<Tab>>) -> Element {
                     }
                 </aside>
                 <main class="g-main" id="top">
+                    <ViewSwitch />
                     <div class="g-page">
                         <div class="g-eyebrow">Design system · rsx + Tailwind + Zag</div>
                         <h1 class="g-h1">One markup, two themes</h1>
                         <p class="g-lead">
                             Every shadcn/ui component, rendered on the server by rsx. Each example renders the same calls twice:
-                            on the left under the shadcn tokens, on the right under the docs.stripe.com tokens. Only
+                            on the left under the shadcn tokens, on the right under the original tokens. Only
                             <code class="g-code">data-ui-theme</code> differs.
                         </p>
                         <div class="g-callout" id="tokens">
@@ -66,9 +66,9 @@ pub fn Page(code: &HashMap<&str, Vec<Tab>>) -> Element {
                                             <div class="g-pane-label"><span>shadcn/ui</span></div>
                                             <div class="g-pane-body"><Demo slug={entry.slug} p="shadcn" /></div>
                                         </div>
-                                        <div class="g-pane" data-ui-theme="stripe">
-                                            <div class="g-pane-label"><span>docs.stripe.com</span></div>
-                                            <div class="g-pane-body"><Demo slug={entry.slug} p="stripe" /></div>
+                                        <div class="g-pane" data-ui-theme="original">
+                                            <div class="g-pane-label"><span>Original</span></div>
+                                            <div class="g-pane-body"><Demo slug={entry.slug} p="original" /></div>
                                         </div>
                                     </div>
                                     <CodePanel slug={entry.slug} tabs={&code[entry.slug]} />
@@ -119,12 +119,13 @@ fn dot_class(js: Js) -> &'static str {
     js.class()
 }
 
-/// Which styles the examples show. Radios and `:has()` in gallery.css do
-/// the work; THEME_SCRIPT only remembers the choice.
+/// Which styles the examples show. It floats at the top right of the page,
+/// so it stays in reach at any scroll position. Radios and `:has()` in
+/// gallery.css do the work; THEME_SCRIPT only remembers the choice.
 fn ViewSwitch() -> Element {
     <fieldset class="g-view">
         <legend class="sr-only">Show</legend>
-        <label title="docs.stripe.com only"><input type="radio" name="view" value="stripe">Stripe</label>
+        <label title="The original theme only"><input type="radio" name="view" value="original">Original</label>
         <label title="shadcn/ui only"><input type="radio" name="view" value="shadcn">shadcn</label>
         <label title="Both, side by side"><input type="radio" name="view" value="both" checked>Compare</label>
     </fieldset>

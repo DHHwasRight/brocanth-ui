@@ -92,7 +92,7 @@ pub const GROUPS: &[Group] = &[
         e("breadcrumb", "Breadcrumb", Js::None("HTML"), "A trail of links."),
         e("navigation-menu", "Navigation menu", Js::None("popover"), "Site links; flyouts are native popovers."),
         e("pagination", "Pagination", Js::None("links"), "Links, so dp-boost turns them into partial navigations."),
-        e("tabs", "Tabs", Js::Zag("tabs"), "Roving focus and arrow keys. shadcn draws a pill, Stripe an underline: tokens only."),
+        e("tabs", "Tabs", Js::Zag("tabs"), "Roving focus and arrow keys. shadcn draws a pill, the original theme an underline: tokens only."),
         e("sidebar", "Sidebar", Js::None("checkbox + :has()"), "Collapses on wide screens, slides over on narrow ones."),
     ]},
     Group { name: "Data display", entries: &[

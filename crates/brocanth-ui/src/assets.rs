@@ -81,9 +81,9 @@ mod tests {
     #[test]
     fn the_stylesheet_holds_both_themes() {
         let css = text("brocanth-ui/ui.css");
-        assert!(css.contains("[data-ui-theme=stripe]"));
+        assert!(css.contains("[data-ui-theme=original]"));
         assert!(css.contains("[data-ui-theme=shadcn]"));
-        assert!(css.contains("#625afa"), "the Stripe brand colour");
+        assert!(css.contains("#625afa"), "the original brand colour");
         assert!(
             css.contains("light-dark("),
             "tokens follow the colour scheme"

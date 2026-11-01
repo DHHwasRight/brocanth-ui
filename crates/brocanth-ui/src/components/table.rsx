@@ -1,7 +1,7 @@
 //! Table. No JavaScript.
 //!
 //! The header row reads three component tokens, so each theme can set it:
-//! shadcn keeps sentence case; the Stripe docs look uses small caps.
+//! shadcn keeps sentence case; the original theme uses small caps.
 
 pub fn Table(children: Element) -> Element {
     <div class="relative w-full overflow-x-auto">

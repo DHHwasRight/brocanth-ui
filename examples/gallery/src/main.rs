@@ -1,7 +1,7 @@
 //! Renders the gallery to static files: `cargo run -p gallery -- <out-dir>`.
 //!
 //! The page shows every component twice, side by side: once under the
-//! shadcn theme and once under the Stripe docs theme. Both columns render
+//! shadcn theme and once under the original theme. Both columns render
 //! the same rsx calls; only `data-theme` on the column differs.
 
 use std::{env, fs, path::PathBuf};

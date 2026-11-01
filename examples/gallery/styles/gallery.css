@@ -6,7 +6,7 @@
 @import "tailwindcss" source(none);
 @import "../../../crates/brocanth-ui/styles/theme.css";
 @import "../../../crates/brocanth-ui/styles/themes/shadcn.css";
-@import "../../../crates/brocanth-ui/styles/themes/stripe.css";
+@import "../../../crates/brocanth-ui/styles/themes/original.css";
 
 @source "../../../crates/brocanth-ui/src";
 @source "../../../crates/brocanth-ui/assets/brocanth-ui/_glue";
@@ -44,16 +44,17 @@
   .g-top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; gap: 32px; height: 64px; padding: 0 24px; background: var(--g-top); backdrop-filter: blur(8px); border-bottom: 1px solid var(--g-line); }
   .g-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; color: var(--g-ink); letter-spacing: -0.01em; }
   .g-brand-mark { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #635bff 0%, #00a8e8 100%); }
-  /* View switch: d3set's library switch, built on radios. */
-  .g-view { display: flex; gap: 2px; margin: 0; padding: 3px; min-width: 0; font-size: 13px; line-height: 20px; border: 1px solid var(--g-line); border-radius: 8px; }
+  /* View switch: d3set's library switch, built on radios, floating at the
+     top right of the page under the top bar, at any scroll position. */
+  .g-view { position: fixed; z-index: 15; top: calc(64px + 16px + env(safe-area-inset-top, 0px)); right: 24px; display: flex; gap: 2px; margin: 0; padding: 3px; min-width: 0; font-size: 13px; line-height: 20px; background: var(--g-top); backdrop-filter: blur(8px); border: 1px solid var(--g-line); border-radius: 8px; box-shadow: 0 4px 16px light-dark(rgb(10 37 64 / 0.10), rgb(0 0 0 / 0.45)); }
   .g-view label { position: relative; padding: 3px 10px; font-weight: 500; color: var(--g-text); white-space: nowrap; border-radius: 6px; cursor: pointer; }
   .g-view label:hover { color: var(--g-ink); background: var(--g-stage); }
   .g-view input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
   .g-view label:has(:checked) { color: var(--g-on-accent); background: var(--g-accent); }
   .g-view label:has(:focus-visible) { outline: 2px solid var(--g-accent); outline-offset: 1px; }
   /* One style: hide the other pane, and the pair takes the whole width. */
-  :root:has(.g-view input[value="stripe"]:checked) .g-pane[data-ui-theme="shadcn"],
-  :root:has(.g-view input[value="shadcn"]:checked) .g-pane[data-ui-theme="stripe"] { display: none; }
+  :root:has(.g-view input[value="original"]:checked) .g-pane[data-ui-theme="shadcn"],
+  :root:has(.g-view input[value="shadcn"]:checked) .g-pane[data-ui-theme="original"] { display: none; }
   :root:has(.g-view input:not([value="both"]):checked) .g-pair { grid-template-columns: minmax(0, 1fr); }
   .g-top-nav { display: flex; gap: 22px; font-size: 14px; font-weight: 500; }
   .g-top-nav a { color: var(--g-text); padding: 20px 0; border-bottom: 2px solid transparent; }
@@ -143,9 +144,7 @@
     .g-side { display: none; }
     .g-main { padding: 24px 16px 64px; }
     .g-top { padding: 0 16px; gap: 16px; }
+    .g-view { right: 16px; top: calc(64px + 12px + env(safe-area-inset-top, 0px)); }
     .g-top-nav { display: none; }
-  }
-  @media (max-width: 480px) {
-    .g-brand-name { display: none; }
   }
 }

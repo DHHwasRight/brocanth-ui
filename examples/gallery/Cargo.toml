@@ -5,7 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 publish = false
-description = "Renders every component twice, under the shadcn theme and the Stripe docs theme, to static files."
+description = "Renders every component twice, under the shadcn theme and the original theme, to static files."
 
 [dependencies]
 brocanth-ui = { workspace = true, features = ["charts"] }

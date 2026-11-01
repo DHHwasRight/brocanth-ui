@@ -7,7 +7,7 @@
  *
  * The colour names are shadcn's, so a shadcn class list ports unchanged.
  * The extra tokens (shadow, control size, weight, overlay) exist because
- * the Stripe docs look differs from shadcn in more than colour.
+ * the original theme differs from shadcn in more than colour.
  *
  * An app that runs its own Tailwind imports this file, the theme files,
  * and adds `@source` for this crate's `src/` (see examples/gallery).

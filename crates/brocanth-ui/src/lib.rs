@@ -2,8 +2,8 @@
 //!
 //! - Markup: rsx components in `src/components/*.rsx`, rendered on the server.
 //! - Style: Tailwind classes that read theme variables (`styles/theme.css`).
-//!   Two themes ship: shadcn (default) and the docs.stripe.com look
-//!   (`data-theme="stripe"` on any ancestor).
+//!   Two themes ship: shadcn (default) and the original theme
+//!   (`data-ui-theme="original"` on any ancestor).
 //! - Behaviour: static components ship no JavaScript. Stateful ones
 //!   (dialog, ...) carry `data-ui="<kind>"`, and
 //!   `assets/brocanth-ui/_glue/<kind>.js` drives them with a Zag.js machine.

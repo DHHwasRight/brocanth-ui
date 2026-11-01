@@ -6,7 +6,7 @@
 //! component: use `NavigationMenuLink` or links with `dp-get`.
 //!
 //! The look comes from tokens: shadcn draws a pill on a muted track;
-//! the Stripe theme draws an underline, as on docs.stripe.com.
+//! the original theme draws an underline on a divider.
 
 pub fn Tabs(id: &str, value: &str, children: Element) -> Element {
     <div id={id} data-ui="tabs" data-part="root" data-value={value} class="flex flex-col gap-3">{children}</div>
