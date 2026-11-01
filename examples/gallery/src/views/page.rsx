@@ -3,10 +3,10 @@ use std::collections::HashMap;
 use crate::catalog::{count, count_without_js, Js, GROUPS};
 use crate::code::Tab;
 use super::demo::Demo;
-use super::shell::{CodePanel, Shell};
+use super::shell::{CodePanel, PageTitle, Shell};
 
-pub fn Page(css: &str, code: &HashMap<&str, Vec<Tab>>) -> Element {
-    <Shell title="brocanth-ui · Components" root="" css={css} tab="components">
+pub fn Page(base: &str, css: &str, code: &HashMap<&str, Vec<Tab>>) -> Element {
+    <Shell title="brocanth-ui · Components" base={base} css={css} tab="components">
                 <aside class="g-side" aria-label="Components">
                     for group in GROUPS {
                         <div class="g-side-group">
@@ -18,6 +18,7 @@ pub fn Page(css: &str, code: &HashMap<&str, Vec<Tab>>) -> Element {
                     }
                 </aside>
                 <main class="g-main" id="top">
+                    <PageTitle title="brocanth-ui · Components" />
                     <ViewSwitch />
                     <div class="g-page">
                         <div class="g-eyebrow">Design system · rsx + Tailwind + Zag</div>
@@ -42,7 +43,8 @@ pub fn Page(css: &str, code: &HashMap<&str, Vec<Tab>>) -> Element {
                                         <span class={format!("g-badge {}", entry.js.class())}>{entry.js.label()}</span>
                                     </div>
                                     <p class="g-muted">{entry.blurb}</p>
-                                    <div class="g-pair">
+                                    // Links inside an example demonstrate a component; they are not site navigation.
+                                    <div class="g-pair" dp-boost="false">
                                         <div class="g-pane" data-ui-theme="shadcn">
                                             <div class="g-pane-label"><span>shadcn/ui</span></div>
                                             <div class="g-pane-body"><Demo slug={entry.slug} p="shadcn" /></div>

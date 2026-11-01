@@ -10,13 +10,14 @@ use brocanth_ui::components::badge::Badge;
 use brocanth_ui::components::button::Button;
 use brocanth_ui::components::popover::{PopoverContent, PopoverTrigger};
 use brocanth_ui::{BadgeVariant, ButtonSize, ButtonVariant};
-use super::reference::ReferenceSide;
-use super::shell::{CodePanel, Shell};
+use super::reference::{title, ReferenceSide};
+use super::shell::{CodePanel, PageTitle, Shell, LAYER_2};
 
-pub fn GuidePage(css: &str, code: &HashMap<&str, Vec<Tab>>) -> Element {
-    <Shell title="Configuration · brocanth-ui utilities" root="../" css={css} tab="utilities">
-        <ReferenceSide current="index" />
-        <main class="g-main" id="top">
+pub fn GuidePage(base: &str, css: &str, code: &HashMap<&str, Vec<Tab>>) -> Element {
+    <Shell title={&title("Configuration")} base={base} css={css} tab="utilities">
+        <ReferenceSide current="index" oob={false} />
+        <main class="g-main" id="top" dp-layout="/utilities">{! LAYER_2.0 }
+            <PageTitle title={&title("Configuration")} />
             <article class="g-page g-doc" data-ui-theme="original">
                 <div class="g-eyebrow">Getting started</div>
                 <h1 class="g-h1">Configuration</h1>
@@ -107,7 +108,7 @@ pub fn GuidePage(css: &str, code: &HashMap<&str, Vec<Tab>>) -> Element {
                     <CodePanel slug="guide-build" tabs={&code["build"]} />
                 </section>
             </article>
-        </main>
+        {! LAYER_2.1 }</main>
     </Shell>
 }
 

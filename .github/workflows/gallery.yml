@@ -1,6 +1,7 @@
 # Builds the gallery, checks it in headless Chromium, and publishes it to
-# GitHub Pages. The gallery is a static export with relative URLs, so it
-# works under https://dhhwasright.github.io/brocanth-ui/.
+# GitHub Pages at https://dhhwasright.github.io/brocanth-ui/. brocanth-static
+# writes every page as a document and as partials for dp-swap, with the
+# /brocanth-ui base path on every URL.
 name: Gallery
 
 on:
@@ -31,8 +32,10 @@ jobs:
       - name: Test
         run: cargo test --workspace
 
+      # Under the Pages base path, into a folder with the same name, so the
+      # browser checks see the site exactly as Pages serves it.
       - name: Export the gallery
-        run: cargo run -p gallery -- target/gallery
+        run: GALLERY_BASE=/brocanth-ui cargo run -p gallery -- target/site/brocanth-ui
 
       - name: Install the browser-test tools
         run: |
@@ -41,14 +44,14 @@ jobs:
 
       - name: Check the gallery in headless Chromium
         run: |
-          python3 -m http.server -d target/gallery 4100 >/dev/null 2>&1 &
+          python3 -m http.server -d target/site 4100 >/dev/null 2>&1 &
           sleep 1
-          node tests/browser.mjs
+          GALLERY_URL=http://localhost:4100/brocanth-ui/ node tests/browser.mjs
 
       - uses: actions/upload-pages-artifact@v5
         if: github.ref == 'refs/heads/main'
         with:
-          path: target/gallery
+          path: target/site/brocanth-ui
 
   deploy:
     if: github.ref == 'refs/heads/main'

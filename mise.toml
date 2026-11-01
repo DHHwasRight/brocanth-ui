@@ -40,6 +40,6 @@ SHOTS=target node tests/browser.mjs
 """
 [tasks.gallery-export]
 depends = ["assets"]
-run = "rm -rf target/gallery && cargo run -p gallery -- target/gallery"
+run = "cargo run -p gallery -- target/gallery"
 [tasks.ci]
 depends = ["build", "typecheck", "lint", "test"]

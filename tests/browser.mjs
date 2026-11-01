@@ -338,10 +338,10 @@ await check("a first visit shows Original, with no jump, and keeps it across tab
   await fresh.goto(url);
   const first = await fresh.evaluate(() => ({ view: window.viewAtParse, shadcnShown: window.shadcnShownAtParse }));
   await fresh.locator('.g-top-nav a:has-text("Utilities")').click();
-  await fresh.waitForLoadState();
+  await fresh.waitForFunction(() => document.querySelector("h1")?.textContent === "Configuration");
   await fresh.locator('.g-top-nav a:has-text("Components")').click();
-  await fresh.waitForLoadState();
-  const back = await fresh.evaluate(() => ({ view: window.viewAtParse, checked: document.querySelector(".g-view input:checked")?.value }));
+  await fresh.waitForFunction(() => document.querySelector("h1")?.textContent === "One markup, two themes");
+  const back = await fresh.evaluate(() => ({ view: document.documentElement.dataset.view, checked: document.querySelector(".g-view input:checked")?.value }));
   await fresh.close();
   return (first.view === "original" && !first.shadcnShown && back.view === "original" && back.checked === "original") || { first, back };
 });
@@ -365,7 +365,7 @@ const base = new URL(url);
 await check("the Utilities tab opens the Configuration guide", async () => {
   await page.goto(base.href);
   await page.locator('.g-top-nav a:has-text("Utilities")').click();
-  await page.waitForLoadState();
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent === "Configuration").catch(() => {});
   const title = await page.locator("h1").textContent();
   const steps = await page.locator(".g-steps li").count();
   return (title === "Configuration" && steps === 7) || { title, steps };
@@ -377,14 +377,14 @@ await check("a guide section shows the CSS we pass to Tailwind", async () => {
   return code.includes("--color-primary: var(--ui-primary)") || code.slice(0, 120);
 });
 await check("a utility page shows the CSS our configuration compiles", async () => {
-  await page.goto(new URL("utilities/border-radius.html", base).href);
+  await page.goto(new URL("utilities/border-radius/", base).href);
   const row = page.locator('.g-ref tr:has(code:text-is("rounded-md"))');
   const css = await row.locator(".g-ref-css").textContent();
   const ours = await row.locator(".g-ref-ours").count();
   return (css.trim() === "border-radius: var(--ui-radius-md);" && ours === 1) || { css, ours };
 });
 await check("a utility page has a live example and its rsx", async () => {
-  await page.goto(new URL("utilities/z-index.html", base).href);
+  await page.goto(new URL("utilities/z-index/", base).href);
   const example = await page.locator(".g-doc .g-pane-body .z-30").count();
   await page.locator(".g-src > summary").click();
   await settle(300);
@@ -392,19 +392,49 @@ await check("a utility page has a live example and its rsx", async () => {
   return (example === 1 && code.includes("pub fn ZIndexExample()")) || { example, code: code.slice(0, 80) };
 });
 await check("the pager walks to the next utility", async () => {
-  await page.goto(new URL("utilities/aspect-ratio.html", base).href);
+  await page.goto(new URL("utilities/aspect-ratio/", base).href);
   await page.locator(".g-pager-next").click();
-  await page.waitForLoadState();
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent === "columns").catch(() => {});
   return (await page.locator("h1").textContent()) === "columns";
 });
 await check("the Components tab links back", async () => {
   await page.locator('.g-top-nav a:has-text("Components")').click();
-  await page.waitForLoadState();
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent === "One markup, two themes").catch(() => {});
   return (await page.locator("h1").textContent()) === "One markup, two themes";
 });
 
+await check("a link is a partial navigation: no reload, new title, tab and sidebar follow", async () => {
+  await page.goto(base.href);
+  await page.waitForFunction(() => window.dpswap);
+  await page.evaluate(() => { window.sameDocument = true; });
+  const requests = [];
+  const listen = (r) => requests.push(new URL(r.url()).pathname);
+  page.on("request", listen);
+  await page.locator('.g-top-nav a:has-text("Utilities")').click();
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent === "Configuration");
+  await page.locator('.g-side-link:text-is("z-index")').click();
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent === "z-index");
+  page.off("request", listen);
+  const state = await page.evaluate(() => ({
+    same: window.sameDocument === true,
+    title: document.title,
+    path: location.pathname,
+    tab: document.querySelector(".g-top-nav .is-current")?.textContent,
+    side: document.querySelector(".g-side-link.is-current")?.textContent,
+  }));
+  const partials = requests.filter((p) => p.includes("/partials/"));
+  const ok = state.same && state.title.startsWith("z-index") && state.path.endsWith("/utilities/z-index/") && state.tab === "Utilities" && state.side === "z-index"
+    && partials.some((p) => p.includes("/partials/1/utilities")) && partials.some((p) => p.includes("/partials/2/utilities/z-index"));
+  return ok || { state, partials };
+});
+await check("Back after a partial navigation shows the previous page", async () => {
+  await page.goBack();
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent === "Configuration");
+  return page.evaluate(() => window.sameDocument === true);
+});
+
 await check("every utility page loads with no error", async () => {
-  await page.goto(new URL("utilities/index.html", base).href);
+  await page.goto(new URL("utilities/", base).href);
   const links = await page.locator(".g-side-link").evaluateAll((as) => as.map((a) => a.href));
   const before = errors.length;
   const broken = [];
@@ -413,6 +443,17 @@ await check("every utility page loads with no error", async () => {
     if (!response.ok() || (await page.locator(".g-doc .g-pane-body").count()) === 0) broken.push(link);
   }
   return (links.length === 185 && broken.length === 0 && errors.length === before) || { pages: links.length, broken, errors: errors.slice(before) };
+});
+await check("without JavaScript, every link is a full page", async () => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const plain = await context.newPage();
+  await plain.goto(new URL("utilities/", base).href);
+  await plain.locator('.g-side-link:text-is("gap")').click();
+  await plain.waitForLoadState();
+  const h1 = await plain.locator("h1").textContent();
+  const tab = await plain.locator(".g-top-nav .is-current").textContent();
+  await context.close();
+  return (h1 === "gap" && tab === "Utilities") || { h1, tab };
 });
 
 await page.screenshot({ path: `${shots}/gallery-top.png` }).catch(() => {});

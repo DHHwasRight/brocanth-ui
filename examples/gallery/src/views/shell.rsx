@@ -1,11 +1,23 @@
 //! The page shell every gallery page shares: head, top bar with the two
-//! tabs, and the theme switch. `root` is the path back to the site root:
-//! "" for index.html, "../" for utilities/<page>.html.
+//! tabs, and the theme switch.
+//!
+//! Links are root-relative; brocanth-static adds the base path on export.
+//! `dp-boost` on <body> turns them into partial navigations into `#shell`,
+//! layer 1 (dp-swap finds layer 2 itself, from the markers). Layer 1 of the
+//! layout is everything under the top bar (`dp-layout="/"`). The Utilities
+//! pages add layer 2, their content next to the sidebar. The comments
+//! LAYER_1 and LAYER_2 mark the layers, so the handler can answer
+//! `DP-Partial: <depth>` with that layer alone (see main.rs).
 
 use crate::code::Tab;
 use brocanth_ui::components::head::UiScripts;
 
-pub fn Shell(title: &str, root: &str, css: &str, tab: &str, children: Element) -> Element {
+pub const LAYER_1: (&str, &str) = ("<!--dp-layer-1-->", "<!--/dp-layer-1-->");
+pub const LAYER_2: (&str, &str) = ("<!--dp-layer-2-->", "<!--/dp-layer-2-->");
+
+/// `base` is the path the site is served under ("" or "/brocanth-ui"):
+/// dp-swap needs it to find the partials.
+pub fn Shell(title: &str, base: &str, css: &str, tab: &str, children: Element) -> Element {
     <!DOCTYPE html>
     <html lang="en">
         <head>
@@ -13,21 +25,36 @@ pub fn Shell(title: &str, root: &str, css: &str, tab: &str, children: Element) -
             <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
             <title>{title}</title>
             <script>{! THEME_SCRIPT }</script>
-            <link rel="stylesheet" href={format!("{root}{css}")}>
+            <link rel="stylesheet" href={format!("/{css}")}>
+            // A static host cannot read DP-Partial: dp-swap fetches partials/<depth>/<path>.
+            <meta name="dp-config" content={format!(r#"{{"partialDir":"partials","base":"{base}"}}"#)}>
+            <script src="/dpswap.min.js" defer></script>
             <UiScripts />
         </head>
-        <body class="g-body">
+        <body class="g-body" dp-boost dp-target="#shell">
             <header class="g-top">
-                <a class="g-brand" href={format!("{root}index.html")}><span class="g-brand-mark"></span><span class="g-brand-name">brocanth-ui</span></a>
-                <nav class="g-top-nav" aria-label="Sections">
-                    <a href={format!("{root}index.html")} class={current(tab, "components")}>Components</a>
-                    <a href={format!("{root}utilities/index.html")} class={current(tab, "utilities")}>Utilities</a>
-                </nav>
+                <a class="g-brand" href="/"><span class="g-brand-mark"></span><span class="g-brand-name">brocanth-ui</span></a>
+                <TopNav tab={tab} oob={false} />
                 <ThemeSwitch />
             </header>
-            <div class="g-shell">{children}</div>
+            <div class="g-shell" id="shell" dp-layout="/">{! LAYER_1.0 }{children}{! LAYER_1.1 }</div>
         </body>
     </html>
+}
+
+/// The two tabs. A partial carries them out of band (`oob`), so the current
+/// tab follows a partial navigation.
+pub fn TopNav(tab: &str, oob: bool) -> Element {
+    <nav class="g-top-nav" id="top-nav" aria-label="Sections" { ...[("dp-swap-oob", oob.then_some("outerHTML"))] }>
+        <a href="/" class={current(tab, "components")}>Components</a>
+        <a href="/utilities/" class={current(tab, "utilities")}>Utilities</a>
+    </nav>
+}
+
+/// The page title, inside the layer a partial replaces: the gallery script
+/// copies it to <title> after a partial navigation.
+pub fn PageTitle(title: &str) -> Element {
+    <template data-page-title={title}></template>
 }
 
 fn current(tab: &str, name: &str) -> &'static str {
@@ -102,6 +129,15 @@ const THEME_SCRIPT: &str = r##"(function () {
     if (event.target.name !== "view") return;
     root.dataset.view = event.target.value;
     try { localStorage.setItem(view, event.target.value); } catch (e) {}
+  });
+  // After a partial navigation: the new page's title, and the top of the
+  // page unless the link went to an anchor.
+  document.addEventListener("dp:afterSwap", function (event) {
+    var marker = event.target.querySelector && event.target.querySelector("template[data-page-title]");
+    if (marker) document.title = marker.getAttribute("data-page-title");
+    if (!location.hash) window.scrollTo(0, 0);
+    var input = document.querySelector('.g-view input[value="' + root.dataset.view + '"]');
+    if (input) input.checked = true;
   });
   // The radios follow, for the keyboard and for screen readers.
   document.addEventListener("DOMContentLoaded", function () {
