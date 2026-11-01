@@ -23,11 +23,17 @@ two tabs:
   with a quick reference compiled through our configuration, a live example
   under the original theme, and its rsx. Its first page, Configuration,
   walks through what we pass to the Tailwind CLI.
+- **Charts**: the d3set chart gallery, Rust version (d3set-ssr): 24 chart
+  kinds rendered on the server as SVG and HTML, in our theme's colours, each
+  with its spec and template.
+
+brocanth-static exports every page as a document and as partials; with
+JavaScript, dp-swap loads only the part of the page that changes.
 
 ```
 mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
-mise run gallery        # every component, both themes, http://localhost:4100
-mise run browser-test   # 36 checks in headless Chromium
+mise run gallery        # the three tabs, http://localhost:4100
+mise run browser-test   # 43 checks in headless Chromium
 ```
 
 See [docs/components.md](docs/components.md) for each component's JS cost,
@@ -64,7 +70,7 @@ examples/gallery/             the static site: Components and Utilities tabs, d3
   data/utilities.json         the utility pages and their class names (scripts/utility-index.mjs)
   src/reference.rs            reads each class's compiled CSS back from build.rs's reference.css
   src/views/u_*.rsx           one example per utility page, by category
-tests/browser.mjs             36 checks in headless Chromium
+tests/browser.mjs             43 checks in headless Chromium
 docs/components.md            JS cost per component, Zag workarounds, known gaps
 ```
 
