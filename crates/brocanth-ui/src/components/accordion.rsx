@@ -14,7 +14,9 @@ pub fn AccordionItem(name: &str, title: &str, open: bool, children: Element) -> 
             {title}
             {! crate::icons::CHEVRON_DOWN }
         </summary>
-        <div class="pb-4 text-sm text-foreground">{children}</div>
+        // The collapsing element has no padding, so it can shrink to 0: the
+        // padding is on the inner one.
+        <div><div class="pb-4 text-sm text-foreground">{children}</div></div>
     </details>
 }
 

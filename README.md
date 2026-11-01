@@ -33,7 +33,7 @@ JavaScript, dp-swap loads only the part of the page that changes.
 ```
 mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
 mise run gallery        # the three tabs, http://localhost:4100
-mise run browser-test   # 44 checks in headless Chromium and WebKit
+mise run browser-test   # 45 checks in headless Chromium and WebKit
 ```
 
 See [docs/components.md](docs/components.md) for each component's JS cost,
@@ -70,7 +70,7 @@ examples/gallery/             the static site: Components and Utilities tabs, d3
   data/utilities.json         the utility pages and their class names (scripts/utility-index.mjs)
   src/reference.rs            reads each class's compiled CSS back from build.rs's reference.css
   src/views/u_*.rsx           one example per utility page, by category
-tests/browser.mjs             44 checks in headless Chromium and WebKit
+tests/browser.mjs             45 checks in headless Chromium and WebKit
 docs/components.md            JS cost per component, Zag workarounds, known gaps
 ```
 

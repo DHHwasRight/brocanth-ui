@@ -6,6 +6,7 @@ pub fn Collapsible(title: &str, open: bool, children: Element) -> Element {
             {title}
             {! crate::icons::CHEVRONS_UP_DOWN }
         </summary>
-        <div class="grid gap-2 pt-2">{children}</div>
+        // The collapsing element has no padding, so it can shrink to 0.
+        <div><div class="grid gap-2 pt-2">{children}</div></div>
     </details>
 }

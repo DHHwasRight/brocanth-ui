@@ -152,6 +152,18 @@ await check("accordion content grows to its height", async () => {
   return (closed < mid && mid < open) || { closed, mid, open };
 });
 
+await check("a closed accordion, collapsible and code panel collapse to exactly 0 (no jump at the end)", async () => {
+  // Padding or a border on the collapsing element would stop the row short
+  // of 0 and make the last step a jump; the closed row height shows it.
+  const rows = await page.evaluate(() =>
+    ['#accordion [data-ui-theme="original"] details:not([open])', '#collapsible [data-ui-theme="original"] details', "#button .g-src"].map((s) => {
+      const details = document.querySelector(s);
+      if (details.open) details.open = false;
+      return getComputedStyle(details, "::details-content").gridTemplateRows;
+    }),
+  );
+  return rows.every((r) => r === "0px") || rows;
+});
 await check("the accordion opens with its transition in WebKit (Safari's engine) too", async () => {
   // The motion itself is measured in Chromium above. Headless WebKit on
   // Linux paints too few frames to measure, so this checks what decides
