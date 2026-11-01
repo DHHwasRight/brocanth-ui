@@ -16,9 +16,12 @@
   --ui-card-foreground: light-dark(#414552, #adbdcc);
   --ui-popover: light-dark(#ffffff, #0f2236);
   --ui-popover-foreground: light-dark(#414552, #adbdcc);
-  --ui-primary: light-dark(#625afa, #9d97ff);
-  --ui-primary-hover: light-dark(#513dd9, #b49cfc);
-  --ui-primary-foreground: light-dark(#ffffff, #0a1929);
+  /* Primary, success, warning and destructive: the dark-scheme colours in
+     both schemes. Text on them is navy, and their chips are dark, so
+     text in these colours stays readable on a light page. */
+  --ui-primary: #9d97ff;
+  --ui-primary-hover: #b49cfc;
+  --ui-primary-foreground: #0a1929;
   --ui-secondary: light-dark(#ffffff, #0d1e31);
   --ui-secondary-foreground: light-dark(#414552, #e6ebf1);
   --ui-secondary-border: light-dark(#d5dbe1, #23364d);
@@ -26,12 +29,13 @@
   --ui-muted-foreground: light-dark(#687385, #8d9aab);
   --ui-accent: light-dark(#f6f8fa, #12283f);
   --ui-accent-foreground: light-dark(#30313d, #f6f9fc);
-  --ui-destructive: light-dark(#df1b41, #ff5c7a);
-  --ui-destructive-foreground: light-dark(#ffffff, #0a1929);
-  --ui-success: light-dark(#228403, #3ecf8e);
-  --ui-success-muted: light-dark(#d7f7c2, #0c2b22);
-  --ui-warning: light-dark(#c84801, #f5a623);
-  --ui-warning-muted: light-dark(#fcedb9, #33240b);
+  --ui-destructive: #ff5c7a;
+  --ui-destructive-foreground: #0a1929;
+  --ui-destructive-muted: #3a0d17;
+  --ui-success: #3ecf8e;
+  --ui-success-muted: #0c2b22;
+  --ui-warning: #f5a623;
+  --ui-warning-muted: #33240b;
   --ui-link: light-dark(#625afa, #9d97ff);
   --ui-border: light-dark(#ebeef1, #23364d);
   --ui-input: light-dark(#d5dbe1, #2f4661);
@@ -78,6 +82,8 @@
   --ui-tabs-list-shadow: inset 0 -1px 0 0 var(--ui-border);
   --ui-tabs-trigger-radius: 0px;
   --ui-tabs-active: transparent;
-  --ui-tabs-active-text: var(--ui-primary);
+  /* The selected tab: heading text over a primary underline. Primary text
+     would be too pale on a light page. */
+  --ui-tabs-active-text: var(--ui-heading);
   --ui-tabs-active-shadow: inset 0 -2px 0 0 var(--ui-primary);
 }

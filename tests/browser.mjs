@@ -286,7 +286,7 @@ await check("resizable: arrow key on the handle resizes", async () => {
 await check("the two panes paint different primary colours", () =>
   page.evaluate(() => {
     const color = (theme) => getComputedStyle(document.querySelector(`#button [data-ui-theme="${theme}"] button`)).backgroundColor;
-    return color("shadcn") !== color("original") && color("original") === "rgb(98, 90, 250)";
+    return color("shadcn") !== color("original") && color("original") === "rgb(157, 151, 255)";
   }),
 );
 await check("the original menu keeps the original theme in the portal", async () => {

@@ -19,7 +19,7 @@ pub fn FieldDescription(children: Element) -> Element {
 
 /// `id` lets the control point at it with `aria-describedby`.
 pub fn FieldError(id: &str, message: &str) -> Element {
-    <p id={id} role="alert" class="text-[13px] font-control text-destructive">{message}</p>
+    <p id={id} role="alert" class="w-fit rounded-sm bg-destructive-muted px-1.5 py-0.5 text-[13px] font-control text-destructive">{message}</p>
 }
 
 pub fn FieldSeparator() -> Element {

@@ -28,6 +28,8 @@
   --ui-accent-foreground: light-dark(oklch(0.205 0 0), oklch(0.985 0 0));
   --ui-destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
   --ui-destructive-foreground: oklch(0.985 0 0);
+  /* The chip behind destructive text: shadcn has none, so the card colour. */
+  --ui-destructive-muted: var(--ui-card);
   --ui-success: light-dark(oklch(0.527 0.154 150.069), oklch(0.723 0.219 149.579));
   --ui-success-muted: light-dark(oklch(0.962 0.044 156.743), oklch(0.266 0.065 152.934));
   --ui-warning: light-dark(oklch(0.555 0.163 48.998), oklch(0.828 0.189 84.429));
