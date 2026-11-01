@@ -14,6 +14,9 @@ The markup is the same for both; only CSS variables differ.
   3. A Zag.js machine, loaded the first time a page renders that kind:
      menus, select, combobox, command, tabs, toast, resizable panels.
 
+Live gallery: **https://dhhwasright.github.io/brocanth-ui/**, built and
+checked by `.github/workflows/gallery.yml` on every push to `main`.
+
 ```
 mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
 mise run gallery        # every component, both themes, http://localhost:4100

@@ -1,0 +1,64 @@
+# Builds the gallery, checks it in headless Chromium, and publishes it to
+# GitHub Pages. The gallery is a static export with relative URLs, so it
+# works under https://dhhwasright.github.io/brocanth-ui/.
+name: Gallery
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gallery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Rust 1.98, the Tailwind CLI and Node, pinned in mise.toml.
+      - uses: jdx/mise-action@v5
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Test
+        run: cargo test --workspace
+
+      - name: Export the gallery
+        run: cargo run -p gallery -- target/gallery
+
+      - name: Install the browser-test tools
+        run: |
+          npm ci
+          npx playwright-core install --with-deps chromium-headless-shell
+
+      - name: Check the gallery in headless Chromium
+        run: |
+          python3 -m http.server -d target/gallery 4100 >/dev/null 2>&1 &
+          sleep 1
+          node tests/browser.mjs
+
+      - uses: actions/upload-pages-artifact@v5
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: target/gallery
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

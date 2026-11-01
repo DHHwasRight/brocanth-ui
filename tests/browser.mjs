@@ -9,9 +9,12 @@
 
 import { chromium } from "playwright-core";
 
-const exe =
-  process.env.CHROME ??
-  `${process.env.HOME}/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`;
+import { existsSync } from "node:fs";
+
+// $CHROME, else the macOS headless shell if present, else the browser that
+// `playwright-core install chromium-headless-shell` put in its cache (CI).
+const macShell = `${process.env.HOME}/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`;
+const exe = process.env.CHROME ?? (existsSync(macShell) ? macShell : undefined);
 const url = process.env.GALLERY_URL ?? "http://localhost:4100/";
 const shots = process.env.SHOTS ?? "target";
 
