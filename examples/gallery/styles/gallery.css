@@ -106,6 +106,35 @@
   .g-pane-label { display: flex; justify-content: space-between; padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--g-muted); background: var(--g-stage); border-bottom: 1px solid var(--g-line); }
   .g-pane-body { padding: 24px; }
 
+  /* Utilities tab: documentation pages under the original theme. */
+  .g-side-link.is-current { color: var(--g-accent); font-weight: 500; background: var(--g-accent-soft); }
+  .g-doc { max-width: 860px; }
+  .g-doc p { margin: 12px 0; max-width: 760px; }
+  .g-doc-h2 { margin: 40px 0 12px; line-height: 28px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--g-ink); }
+  .g-doc-section { scroll-margin-top: 80px; }
+  .g-doc .g-pane { margin-top: 16px; }
+  .g-steps { margin: 16px 0 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 6px; }
+  .g-steps li { counter-increment: step; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .g-steps li::before { content: counter(step); display: grid; place-items: center; width: 22px; height: 22px; font: 600 12px var(--g-mono); color: var(--g-accent); background: var(--g-accent-soft); border-radius: 999px; }
+  .g-steps a { color: var(--g-ink); font-weight: 500; }
+  .g-steps a:hover { color: var(--g-accent); }
+
+  .g-ref { max-height: 28rem; overflow: auto; border: 1px solid var(--g-line); border-radius: var(--g-radius); }
+  .g-ref table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .g-ref thead th { position: sticky; top: 0; z-index: 1; padding: 8px 14px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--g-muted); background: var(--g-stage); border-bottom: 1px solid var(--g-line); }
+  .g-ref td { padding: 6px 14px; vertical-align: top; border-bottom: 1px solid var(--g-line); }
+  .g-ref tr:last-child td { border-bottom: 0; }
+  .g-ref td:first-child { width: 38%; white-space: nowrap; }
+  .g-ref-class { font: 500 12.5px/20px var(--g-mono); color: var(--g-accent); }
+  .g-ref-ours { margin-left: 8px; padding: 0 6px; font-size: 11px; font-weight: 600; color: var(--g-live); background: var(--g-live-bg); border: 1px solid var(--g-live-line); border-radius: 999px; }
+  .g-ref-css { margin: 0; font: 12.5px/20px var(--g-mono); color: var(--g-text); white-space: pre-wrap; word-break: break-word; }
+
+  .g-pager { display: flex; justify-content: space-between; gap: 16px; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--g-line); }
+  .g-pager a { display: grid; gap: 2px; padding: 12px 16px; min-width: 200px; font-weight: 600; color: var(--g-ink); border: 1px solid var(--g-line); border-radius: var(--g-radius); }
+  .g-pager a:hover { border-color: var(--g-accent); }
+  .g-pager span { font-size: 12px; font-weight: 500; color: var(--g-muted); }
+  .g-pager-next { margin-left: auto; text-align: right; }
+
   /* Code panel: d3set's details.code, with CSS-only tabs. */
   .g-src { margin-top: 12px; border: 1px solid var(--g-line); border-radius: var(--g-radius); overflow: hidden; }
   .g-src > summary { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--g-ink); background: var(--g-stage); }

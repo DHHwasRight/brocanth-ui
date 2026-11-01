@@ -11,6 +11,7 @@ use rsx::Template;
 mod catalog;
 mod code;
 mod highlight;
+mod reference;
 
 mod views {
     rsx::load_dir!("src/views");
@@ -36,13 +37,66 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let css_name = format!("gallery.{:08x}.css", fnv(css.as_bytes()) as u32);
     fs::write(out.join(&css_name), css)?;
 
+    // Components: index.html. Utilities: utilities/index.html (the guide)
+    // and one page per utility. Asset URLs are relative to each page.
+    let page = |root: &str, html: String| {
+        html.replace("\"/brocanth-ui/", &format!("\"{root}brocanth-ui/"))
+    };
+
     let code = code::all();
-    let html = views::page::Page { code: &code }.render_to_string()?;
-    // Relative URLs, so the export works below any path, not only at `/`.
-    let html = html.replace("\"/brocanth-ui/", "\"brocanth-ui/");
-    let html = html.replace("href=\"gallery.css\"", &format!("href=\"{css_name}\""));
-    fs::write(out.join("index.html"), html)?;
-    println!("wrote {}/index.html", out.display());
+    let html = views::page::Page {
+        css: &css_name,
+        code: &code,
+    }
+    .render_to_string()?;
+    fs::write(out.join("index.html"), page("", html))?;
+
+    let utilities = out.join("utilities");
+    fs::create_dir_all(&utilities)?;
+    let guide = code::guide();
+    let html = views::guide::GuidePage {
+        css: &css_name,
+        code: &guide,
+    }
+    .render_to_string()?;
+    fs::write(utilities.join("index.html"), page("../", html))?;
+
+    let examples = code::utilities();
+    let pages: Vec<_> = reference::CATEGORIES
+        .iter()
+        .flat_map(|c| c.pages.iter().map(move |p| (c, p)))
+        .collect();
+    for (i, (category, utility)) in pages.iter().enumerate() {
+        // "ours": a class the index adds (tokens), or one whose CSS reads our variables.
+        let rows: Vec<(String, String, bool)> = utility
+            .classes
+            .iter()
+            .map(|row| {
+                let styles = reference::styles(row);
+                let ours = row.ours || styles.contains("--ui-") || styles.contains("-control");
+                (row.name.clone(), styles, ours)
+            })
+            .collect();
+        let html = views::reference::UtilityPage {
+            css: &css_name,
+            category,
+            page: utility,
+            rows: &rows,
+            code: &examples[&utility.slug],
+            previous: i.checked_sub(1).map(|p| pages[p].1),
+            next: pages.get(i + 1).map(|(_, p)| *p),
+        }
+        .render_to_string()?;
+        fs::write(
+            utilities.join(format!("{}.html", utility.slug)),
+            page("../", html),
+        )?;
+    }
+    println!(
+        "wrote {}/index.html and {} utility pages",
+        out.display(),
+        pages.len()
+    );
     Ok(())
 }
 

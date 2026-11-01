@@ -7,6 +7,7 @@ use std::path::{Path, PathBuf};
 
 use crate::catalog::{Entry, Js, GROUPS};
 use crate::highlight;
+use crate::reference::CATEGORIES;
 
 /// One tab of the code panel.
 pub struct Tab {
@@ -14,6 +15,155 @@ pub struct Tab {
     /// Path from the repository root.
     pub path: String,
     pub html: String,
+}
+
+/// The grammar for a file, by extension.
+fn lang(path: &str) -> &'static str {
+    match path.rsplit('.').next() {
+        Some("rsx") => "rsx",
+        Some("rs") => "rust",
+        Some("ts") => "typescript",
+        Some("css") => "css",
+        Some("toml") => "toml",
+        Some("json") => "json",
+        _ => "text",
+    }
+}
+
+/// A tab with a whole file.
+fn file(label: &'static str, path: &str) -> Tab {
+    let text = read(path);
+    Tab {
+        label,
+        html: highlight::html(&text, lang(path)),
+        path: path.to_string(),
+    }
+}
+
+/// A tab with the part of a file from `start` up to and including `end`.
+fn part(label: &'static str, path: &str, start: &str, end: &str) -> Tab {
+    let text = read(path);
+    let from = text
+        .find(start)
+        .unwrap_or_else(|| panic!("gallery: `{start}` not in {path}"));
+    let to = text[from..]
+        .find(end)
+        .map_or(text.len(), |at| from + at + end.len());
+    Tab {
+        label,
+        html: highlight::html(&text[from..to], lang(path)),
+        path: path.to_string(),
+    }
+}
+
+/// The Example tab of each utility page, by slug: the `<Slug>Example`
+/// function from the category's rsx file.
+pub fn utilities() -> HashMap<String, Vec<Tab>> {
+    let mut out = HashMap::new();
+    for category in CATEGORIES.iter() {
+        let module = format!(
+            "u_{}",
+            category
+                .name
+                .to_lowercase()
+                .split(|c: char| !c.is_ascii_alphanumeric())
+                .filter(|w| !w.is_empty())
+                .collect::<Vec<_>>()
+                .join("_")
+        );
+        let path = format!("examples/gallery/src/views/{module}.rsx");
+        let text = read(&path);
+        for page in &category.pages {
+            let name = format!("{}Example", pascal(&page.slug));
+            let tabs = extract_fn(&text, &name)
+                .map(|source| {
+                    vec![Tab {
+                        label: "Example",
+                        path: path.clone(),
+                        html: highlight::html(&source, "rsx"),
+                    }]
+                })
+                .unwrap_or_default();
+            out.insert(page.slug.clone(), tabs);
+        }
+    }
+    out
+}
+
+/// The Code accordions of the Configuration guide, by section.
+pub fn guide() -> HashMap<&'static str, Vec<Tab>> {
+    let theme = "crates/brocanth-ui/styles/theme.css";
+    let guide = "examples/gallery/src/views/guide.rsx";
+    let demo = |label, name: &str| {
+        let text = read(guide);
+        let source =
+            extract_fn(&text, name).unwrap_or_else(|| panic!("gallery: no {name} in {guide}"));
+        Tab {
+            label,
+            path: guide.to_string(),
+            html: highlight::html(&source, "rsx"),
+        }
+    };
+    HashMap::from([
+        (
+            "sources",
+            vec![
+                file("ui.css", "crates/brocanth-ui/styles/ui.css"),
+                file(
+                    "An app's own Tailwind",
+                    "examples/gallery/styles/gallery.css",
+                ),
+            ],
+        ),
+        (
+            "theme",
+            vec![
+                part("theme.css", theme, "@theme inline {", "\n}\n"),
+                demo("Example", "GuideTokens"),
+            ],
+        ),
+        (
+            "themes",
+            vec![
+                file(
+                    "original.css",
+                    "crates/brocanth-ui/styles/themes/original.css",
+                ),
+                file("shadcn.css", "crates/brocanth-ui/styles/themes/shadcn.css"),
+            ],
+        ),
+        (
+            "base",
+            vec![part("theme.css", theme, "@layer base {", "\n}\n")],
+        ),
+        (
+            "motion",
+            vec![
+                part("theme.css", theme, "/*\n * Motion", "\n}\n"),
+                demo("Example", "GuideMotion"),
+            ],
+        ),
+        (
+            "rsx",
+            vec![
+                demo("Example", "GuideRsx"),
+                file("button.rsx", "crates/brocanth-ui/src/components/button.rsx"),
+                part(
+                    "variants.rs",
+                    "crates/brocanth-ui/src/variants.rs",
+                    "const BUTTON_BASE",
+                    "\n}\n\npub fn input",
+                ),
+            ],
+        ),
+        (
+            "build",
+            vec![
+                file("build.rs", "crates/brocanth-ui/build.rs"),
+                file("mise.toml", "mise.toml"),
+            ],
+        ),
+    ])
 }
 
 fn repo() -> PathBuf {
