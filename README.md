@@ -15,12 +15,19 @@ The markup is the same for both; only CSS variables differ.
      menus, select, combobox, command, tabs, toast, resizable panels.
 
 Live gallery: **https://dhhwasright.github.io/brocanth-ui/**, built and
-checked by `.github/workflows/gallery.yml` on every push to `main`.
+checked by `.github/workflows/gallery.yml` on every push to `main`. It has
+two tabs:
+
+- **Components**: every component under both themes, with its code.
+- **Utilities**: Tailwind's utility pages from Layout onwards (184), each
+  with a quick reference compiled through our configuration, a live example
+  under the original theme, and its rsx. Its first page, Configuration,
+  walks through what we pass to the Tailwind CLI.
 
 ```
 mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
 mise run gallery        # every component, both themes, http://localhost:4100
-mise run browser-test   # 28 checks in headless Chromium
+mise run browser-test   # 34 checks in headless Chromium
 ```
 
 See [docs/components.md](docs/components.md) for each component's JS cost,
@@ -52,9 +59,12 @@ crates/brocanth-ui/
                               carousel and date-picker (no Zag)
     boot.js, ui.css           build outputs, committed
   public/brocanth-ui/chunks/  one chunk per kind + shared Zag chunks, committed
-examples/gallery/             every component under both themes, in the d3set gallery layout,
-                              with its code (usage, component, glue) highlighted by giallo
-tests/browser.mjs             28 checks in headless Chromium
+examples/gallery/             the static site: Components and Utilities tabs, d3set gallery layout,
+                              code highlighted by giallo
+  data/utilities.json         the utility pages and their class names (scripts/utility-index.mjs)
+  src/reference.rs            reads each class's compiled CSS back from build.rs's reference.css
+  src/views/u_*.rsx           one example per utility page, by category
+tests/browser.mjs             34 checks in headless Chromium
 docs/components.md            JS cost per component, Zag workarounds, known gaps
 ```
 

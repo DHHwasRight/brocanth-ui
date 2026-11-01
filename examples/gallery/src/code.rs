@@ -277,6 +277,21 @@ mod tests {
     use super::*;
 
     #[test]
+    fn every_utility_page_has_an_example_and_its_source() {
+        let examples = utilities();
+        assert_eq!(examples.len(), 184);
+        let missing: Vec<_> = examples
+            .iter()
+            .filter(|(_, tabs)| tabs.is_empty())
+            .map(|(slug, _)| slug.as_str())
+            .collect();
+        assert!(
+            missing.is_empty(),
+            "no <Slug>Example function for {missing:?}"
+        );
+    }
+
+    #[test]
     fn every_entry_has_its_usage_and_component_source() {
         let demos = demo_sources();
         for entry in GROUPS.iter().flat_map(|group| group.entries) {

@@ -7839,7 +7839,7 @@
    },
    {
     "slug": "backdrop-filter-blur",
-    "title": "blur",
+    "title": "backdrop-blur",
     "classes": [
      {
       "name": "backdrop-blur-xs"
@@ -7877,7 +7877,7 @@
    },
    {
     "slug": "backdrop-filter-brightness",
-    "title": "brightness",
+    "title": "backdrop-brightness",
     "classes": [
      {
       "name": "backdrop-brightness-<number>",
@@ -7895,7 +7895,7 @@
    },
    {
     "slug": "backdrop-filter-contrast",
-    "title": "contrast",
+    "title": "backdrop-contrast",
     "classes": [
      {
       "name": "backdrop-contrast-<number>",
@@ -7913,7 +7913,7 @@
    },
    {
     "slug": "backdrop-filter-grayscale",
-    "title": "grayscale",
+    "title": "backdrop-grayscale",
     "classes": [
      {
       "name": "backdrop-grayscale"
@@ -7934,7 +7934,7 @@
    },
    {
     "slug": "backdrop-filter-hue-rotate",
-    "title": "hue-rotate",
+    "title": "backdrop-hue-rotate",
     "classes": [
      {
       "name": "backdrop-hue-rotate-<number>",
@@ -7956,7 +7956,7 @@
    },
    {
     "slug": "backdrop-filter-invert",
-    "title": "invert",
+    "title": "backdrop-invert",
     "classes": [
      {
       "name": "backdrop-invert"
@@ -7977,7 +7977,7 @@
    },
    {
     "slug": "backdrop-filter-opacity",
-    "title": "opacity",
+    "title": "backdrop-opacity",
     "classes": [
      {
       "name": "backdrop-opacity-<number>",
@@ -7995,7 +7995,7 @@
    },
    {
     "slug": "backdrop-filter-saturate",
-    "title": "saturate",
+    "title": "backdrop-saturate",
     "classes": [
      {
       "name": "backdrop-saturate-<number>",
@@ -8013,7 +8013,7 @@
    },
    {
     "slug": "backdrop-filter-sepia",
-    "title": "sepia",
+    "title": "backdrop-sepia",
     "classes": [
      {
       "name": "backdrop-sepia"

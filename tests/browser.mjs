@@ -25,7 +25,9 @@ const errors = [];
 // The avatar demo shows a broken image on purpose.
 page.on("console", (m) => m.type() === "error" && !m.text().includes("404") && errors.push(m.text()));
 page.on("pageerror", (e) => errors.push(String(e)));
-page.on("requestfailed", (r) => errors.push(`failed ${r.url()}`));
+// A request the browser cancels because the test moved to another page is
+// not a site error; any other failed request is.
+page.on("requestfailed", (r) => r.failure()?.errorText !== "net::ERR_ABORTED" && errors.push(`failed ${r.url()}: ${r.failure()?.errorText}`));
 page.on("response", (r) => r.status() >= 400 && !r.url().endsWith("missing.png") && errors.push(`${r.status()} ${r.url()}`));
 
 const results = [];
@@ -329,6 +331,61 @@ await check("a dp-swap unmounts and remounts the Zag kinds", async () => {
   await $('#shadcn-tabs2 [data-part="trigger"][data-value="node"]').click();
   await settle();
   return page.evaluate(() => !document.querySelector('#shadcn-tabs2 [data-part="content"][data-value="node"]').hidden);
+});
+
+// ---- the Utilities tab
+const base = new URL(url);
+await check("the Utilities tab opens the Configuration guide", async () => {
+  await page.goto(base.href);
+  await page.locator('.g-top-nav a:has-text("Utilities")').click();
+  await page.waitForLoadState();
+  const title = await page.locator("h1").textContent();
+  const steps = await page.locator(".g-steps li").count();
+  return (title === "Configuration" && steps === 7) || { title, steps };
+});
+await check("a guide section shows the CSS we pass to Tailwind", async () => {
+  await page.locator("#theme .g-src > summary").click();
+  await settle(300);
+  const code = await page.locator("#theme .g-src-panel").first().textContent();
+  return code.includes("--color-primary: var(--ui-primary)") || code.slice(0, 120);
+});
+await check("a utility page shows the CSS our configuration compiles", async () => {
+  await page.goto(new URL("utilities/border-radius.html", base).href);
+  const row = page.locator('.g-ref tr:has(code:text-is("rounded-md"))');
+  const css = await row.locator(".g-ref-css").textContent();
+  const ours = await row.locator(".g-ref-ours").count();
+  return (css.trim() === "border-radius: var(--ui-radius-md);" && ours === 1) || { css, ours };
+});
+await check("a utility page has a live example and its rsx", async () => {
+  await page.goto(new URL("utilities/z-index.html", base).href);
+  const example = await page.locator(".g-doc .g-pane-body .z-30").count();
+  await page.locator(".g-src > summary").click();
+  await settle(300);
+  const code = await page.locator(".g-src-panel").first().textContent();
+  return (example === 1 && code.includes("pub fn ZIndexExample()")) || { example, code: code.slice(0, 80) };
+});
+await check("the pager walks to the next utility", async () => {
+  await page.goto(new URL("utilities/aspect-ratio.html", base).href);
+  await page.locator(".g-pager-next").click();
+  await page.waitForLoadState();
+  return (await page.locator("h1").textContent()) === "columns";
+});
+await check("the Components tab links back", async () => {
+  await page.locator('.g-top-nav a:has-text("Components")').click();
+  await page.waitForLoadState();
+  return (await page.locator("h1").textContent()) === "One markup, two themes";
+});
+
+await check("every utility page loads with no error", async () => {
+  await page.goto(new URL("utilities/index.html", base).href);
+  const links = await page.locator(".g-side-link").evaluateAll((as) => as.map((a) => a.href));
+  const before = errors.length;
+  const broken = [];
+  for (const link of links) {
+    const response = await page.goto(link, { waitUntil: "load" });
+    if (!response.ok() || (await page.locator(".g-doc .g-pane-body").count()) === 0) broken.push(link);
+  }
+  return (links.length === 185 && broken.length === 0 && errors.length === before) || { pages: links.length, broken, errors: errors.slice(before) };
 });
 
 await page.screenshot({ path: `${shots}/gallery-top.png` }).catch(() => {});

@@ -33,10 +33,11 @@ const OURS = {
 function shape(categories) {
   for (const category of categories) {
     for (const page of category.pages) {
+      // Safe to run again on its own output: rows already shaped stay, and
+      // our extra classes are added once.
       const seen = new Set();
       const out = [];
       for (const row of page.classes) {
-        if (row.ours) continue;
         const match = row.name.match(PALETTE);
         if (!match) { out.push(row); continue; }
         const prefix = match[1];
@@ -46,7 +47,12 @@ function shape(categories) {
         seen.add(prefix);
         for (const token of tokens) out.push({ name: `${prefix}-${token}`, ours: true });
       }
-      for (const name of OURS[page.slug] ?? []) out.push({ name, ours: true });
+      for (const name of OURS[page.slug] ?? []) {
+        if (!out.some((row) => row.name === name)) out.push({ name, ours: true });
+      }
+      // Tailwind titles the backdrop-filter pages like the filter ones
+      // ("blur" twice): name them after their class prefix instead.
+      if (page.slug.startsWith("backdrop-filter-") && !page.title.startsWith("backdrop-")) page.title = `backdrop-${page.title}`;
       page.classes = out;
     }
   }
