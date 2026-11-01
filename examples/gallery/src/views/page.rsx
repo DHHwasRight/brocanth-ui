@@ -67,15 +67,17 @@ fn dot_class(js: Js) -> &'static str {
     js.class()
 }
 
-/// Which styles the examples show. It floats at the top right of the page,
-/// so it stays in reach at any scroll position. Radios and `:has()` in
-/// gallery.css do the work; THEME_SCRIPT only remembers the choice.
+/// Which styles the examples show; Original by default. It floats at the
+/// top right of the page, so it stays in reach at any scroll position.
+/// THEME_SCRIPT puts the stored choice on <html data-view> before the first
+/// paint, so the page never shows one view and then jumps to another.
+/// Without the script, the checked radio drives the same CSS.
 fn ViewSwitch() -> Element {
     <fieldset class="g-view">
         <legend class="sr-only">Show</legend>
-        <label title="The original theme only"><input type="radio" name="view" value="original">Original</label>
+        <label title="The original theme only"><input type="radio" name="view" value="original" checked>Original</label>
         <label title="shadcn/ui only"><input type="radio" name="view" value="shadcn">shadcn</label>
-        <label title="Both, side by side"><input type="radio" name="view" value="both" checked>Compare</label>
+        <label title="Both, side by side"><input type="radio" name="view" value="both">Compare</label>
     </fieldset>
 }
 

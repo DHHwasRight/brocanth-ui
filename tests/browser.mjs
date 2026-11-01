@@ -21,6 +21,13 @@ const shots = process.env.SHOTS ?? "target";
 const browser = await chromium.launch({ executablePath: exe });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 page.setDefaultTimeout(4000);
+// The examples default to the Original view; most checks need both panes.
+await page.addInitScript(() => {
+  if (!sessionStorage.getItem("view-set")) {
+    localStorage.setItem("brocanth-ui-view", "both");
+    sessionStorage.setItem("view-set", "1");
+  }
+});
 const errors = [];
 // The avatar demo shows a broken image on purpose.
 page.on("console", (m) => m.type() === "error" && !m.text().includes("404") && errors.push(m.text()));
@@ -317,6 +324,26 @@ await check("one style hides the other pane and takes the whole width", async ()
   const both = await page.locator("#button .g-pane").evaluateAll((panes) => panes.filter((p) => p.offsetParent).length);
   const full = (box) => Math.abs(box.width - pair.width) < 2;
   return (full(shadcn) && full(original) && originalHidden && shadcnHidden && both === 2) || { pair, shadcn, original, both };
+});
+
+await check("a first visit shows Original, with no jump, and keeps it across tabs", async () => {
+  const fresh = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  // The view must be set while the document is parsed, before any paint.
+  await fresh.addInitScript(() => {
+    document.addEventListener("DOMContentLoaded", () => {
+      window.viewAtParse = document.documentElement.dataset.view;
+      window.shadcnShownAtParse = [...document.querySelectorAll('.g-pane[data-ui-theme="shadcn"]')].some((p) => getComputedStyle(p).display !== "none");
+    });
+  });
+  await fresh.goto(url);
+  const first = await fresh.evaluate(() => ({ view: window.viewAtParse, shadcnShown: window.shadcnShownAtParse }));
+  await fresh.locator('.g-top-nav a:has-text("Utilities")').click();
+  await fresh.waitForLoadState();
+  await fresh.locator('.g-top-nav a:has-text("Components")').click();
+  await fresh.waitForLoadState();
+  const back = await fresh.evaluate(() => ({ view: window.viewAtParse, checked: document.querySelector(".g-view input:checked")?.value }));
+  await fresh.close();
+  return (first.view === "original" && !first.shadcnShown && back.view === "original" && back.checked === "original") || { first, back };
 });
 
 // ---- dp-swap: unmount before, mount after

@@ -50,12 +50,21 @@
   .g-view label { position: relative; padding: 3px 10px; font-weight: 500; color: var(--g-text); white-space: nowrap; border-radius: 6px; cursor: pointer; }
   .g-view label:hover { color: var(--g-ink); background: var(--g-stage); }
   .g-view input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
-  .g-view label:has(:checked) { color: var(--g-on-accent); background: var(--g-accent); }
   .g-view label:has(:focus-visible) { outline: 2px solid var(--g-accent); outline-offset: 1px; }
-  /* One style: hide the other pane, and the pair takes the whole width. */
-  :root:has(.g-view input[value="original"]:checked) .g-pane[data-ui-theme="shadcn"],
-  :root:has(.g-view input[value="shadcn"]:checked) .g-pane[data-ui-theme="original"] { display: none; }
-  :root:has(.g-view input:not([value="both"]):checked) .g-pair { grid-template-columns: minmax(0, 1fr); }
+  /* The view: <html data-view> when the script ran (set before the first
+     paint), else the checked radio. Original is the default. One style
+     hides the other pane, and the pair takes the whole width. */
+  :root[data-view="original"] .g-view label:has([value="original"]),
+  :root[data-view="shadcn"] .g-view label:has([value="shadcn"]),
+  :root[data-view="both"] .g-view label:has([value="both"]),
+  :root:not([data-view]) .g-view label:has(:checked) { color: var(--g-on-accent); background: var(--g-accent); }
+  :root[data-view="original"] .g-pane[data-ui-theme="shadcn"],
+  :root[data-view="shadcn"] .g-pane[data-ui-theme="original"],
+  :root:not([data-view]):has(.g-view input[value="original"]:checked) .g-pane[data-ui-theme="shadcn"],
+  :root:not([data-view]):has(.g-view input[value="shadcn"]:checked) .g-pane[data-ui-theme="original"] { display: none; }
+  :root[data-view="original"] .g-pair,
+  :root[data-view="shadcn"] .g-pair,
+  :root:not([data-view]):has(.g-view input:not([value="both"]):checked) .g-pair { grid-template-columns: minmax(0, 1fr); }
   .g-top-nav { display: flex; gap: 22px; font-size: 14px; font-weight: 500; }
   .g-top-nav a { color: var(--g-text); padding: 20px 0; border-bottom: 2px solid transparent; }
   .g-top-nav a:hover { color: var(--g-ink); }
@@ -108,7 +117,7 @@
 
   /* Utilities tab: documentation pages under the original theme. */
   .g-side-link.is-current { color: var(--g-accent); font-weight: 500; background: var(--g-accent-soft); }
-  .g-doc { max-width: 860px; }
+  /* Same width as the Components tab (.g-page); prose keeps a readable measure. */
   .g-doc p { margin: 12px 0; max-width: 760px; }
   .g-doc-h2 { margin: 40px 0 12px; line-height: 28px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--g-ink); }
   .g-doc-section { scroll-margin-top: 80px; }

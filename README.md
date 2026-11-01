@@ -27,7 +27,7 @@ two tabs:
 ```
 mise run setup          # npm packages: Zag for the bundle, TypeScript, Playwright
 mise run gallery        # every component, both themes, http://localhost:4100
-mise run browser-test   # 34 checks in headless Chromium
+mise run browser-test   # 36 checks in headless Chromium
 ```
 
 See [docs/components.md](docs/components.md) for each component's JS cost,
@@ -64,7 +64,7 @@ examples/gallery/             the static site: Components and Utilities tabs, d3
   data/utilities.json         the utility pages and their class names (scripts/utility-index.mjs)
   src/reference.rs            reads each class's compiled CSS back from build.rs's reference.css
   src/views/u_*.rsx           one example per utility page, by category
-tests/browser.mjs             34 checks in headless Chromium
+tests/browser.mjs             36 checks in headless Chromium
 docs/components.md            JS cost per component, Zag workarounds, known gaps
 ```
 

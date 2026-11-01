@@ -94,15 +94,18 @@ const THEME_SCRIPT: &str = r##"(function () {
     root.dataset.theme = dark ? "light" : "dark";
     try { localStorage.setItem(key, root.dataset.theme); } catch (e) {}
   });
-  // The view switch: remember the choice, restore it once the page is parsed.
+  // The view switch: the stored choice goes on <html data-view> now, before
+  // the first paint; Original when nothing is stored. A change updates it.
   var view = "brocanth-ui-view";
+  try { root.dataset.view = localStorage.getItem(view) || "original"; } catch (e) { root.dataset.view = "original"; }
   document.addEventListener("change", function (event) {
-    if (event.target.name === "view") try { localStorage.setItem(view, event.target.value); } catch (e) {}
+    if (event.target.name !== "view") return;
+    root.dataset.view = event.target.value;
+    try { localStorage.setItem(view, event.target.value); } catch (e) {}
   });
+  // The radios follow, for the keyboard and for screen readers.
   document.addEventListener("DOMContentLoaded", function () {
-    try {
-      var input = document.querySelector('.g-view input[value="' + localStorage.getItem(view) + '"]');
-      if (input) input.checked = true;
-    } catch (e) {}
+    var input = document.querySelector('.g-view input[value="' + root.dataset.view + '"]');
+    if (input) input.checked = true;
   });
 })();"##;
