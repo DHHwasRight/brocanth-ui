@@ -29,17 +29,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Compiled by build.rs: the gallery's own Tailwind run, which also
-    // scans brocanth-ui's sources.
-    fs::write(
-        out.join("gallery.css"),
-        include_str!(concat!(env!("OUT_DIR"), "/gallery.css")),
-    )?;
+    // scans brocanth-ui's sources. The name carries a content hash: a host
+    // that caches by name (GitHub Pages: 10 minutes) would otherwise serve
+    // the old stylesheet with the new page.
+    let css = include_str!(concat!(env!("OUT_DIR"), "/gallery.css"));
+    let css_name = format!("gallery.{:08x}.css", fnv(css.as_bytes()) as u32);
+    fs::write(out.join(&css_name), css)?;
 
     let code = code::all();
     let html = views::page::Page { code: &code }.render_to_string()?;
     // Relative URLs, so the export works below any path, not only at `/`.
     let html = html.replace("\"/brocanth-ui/", "\"brocanth-ui/");
+    let html = html.replace("href=\"gallery.css\"", &format!("href=\"{css_name}\""));
     fs::write(out.join("index.html"), html)?;
     println!("wrote {}/index.html", out.display());
     Ok(())
+}
+
+/// FNV-1a: enough to tell two builds of the stylesheet apart.
+fn fnv(bytes: &[u8]) -> u64 {
+    bytes.iter().fold(0xcbf2_9ce4_8422_2325, |hash, byte| {
+        (hash ^ u64::from(*byte)).wrapping_mul(0x0100_0000_01b3)
+    })
 }
